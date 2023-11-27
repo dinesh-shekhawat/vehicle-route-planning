@@ -32,10 +32,12 @@
 			<AppenderRef ref="Console" />
 		</Logger>
 		
+		<!-- 
 		<Logger name="org.springframework.web" level="${logLevel}" additivity="false" >
 			<AppenderRef ref="RollingFile" />
 			<AppenderRef ref="Console" />
 		</Logger>
+		 -->
 
 		<Root level="ERROR">
 			<AppenderRef ref="RollingFile" />
