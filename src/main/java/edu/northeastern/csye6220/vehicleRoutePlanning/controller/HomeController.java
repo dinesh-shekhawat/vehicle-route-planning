@@ -1,4 +1,4 @@
-package edu.northeastern.csye6220.vrp.controller;
+package edu.northeastern.csye6220.vehicleRoutePlanning.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

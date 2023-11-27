@@ -1,4 +1,4 @@
-package edu.northeastern.csye6220.vrp;
+package edu.northeastern.csye6220.vehicleRoutePlanning;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
