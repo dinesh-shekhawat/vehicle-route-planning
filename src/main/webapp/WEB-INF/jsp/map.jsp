@@ -13,8 +13,9 @@
     <script>
         var latitude = ${latitude};
         var longitude = ${longitude};
+        var zoomLevel = ${zoomLevel};
 
-        var map = L.map('map').setView([latitude, longitude], 13);
+        var map = L.map('map').setView([latitude, longitude], zoomLevel);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
