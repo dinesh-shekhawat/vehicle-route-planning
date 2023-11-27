@@ -5,14 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class VrpApplication {
+@SpringBootApplication(scanBasePackages = {"edu.northeastern.csye6220"})
+public class Application {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(VrpApplication.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting the Vehicle Route Planning Application");
-		SpringApplication.run(VrpApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }

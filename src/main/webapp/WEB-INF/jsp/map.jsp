@@ -1,19 +1,20 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map</title>
-    <link rel="stylesheet" href="/css/leaflet.css" />
-    <!-- Add any additional styles or scripts here -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/leaflet.css" />
 </head>
 <body>
     <div id="map" style="height: 500px;"></div>
 
-    <script src="/js/leaflet.js"></script>
+    <script src="${pageContext.request.contextPath}/js/leaflet.js"></script>
     <script>
-        // Your Leaflet map initialization code here
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        var latitude = ${latitude};
+        var longitude = ${longitude};
+
+        var map = L.map('map').setView([latitude, longitude], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
