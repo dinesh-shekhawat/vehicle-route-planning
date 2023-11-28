@@ -39,7 +39,7 @@
         
         <script>
             const mapModule = MapModule;
-            mapModule.initMap(${latitude}, ${longitude}, ${zoomLevel});
+            mapModule.init('${pageContext.request.contextPath}', ${latitude}, ${longitude}, ${zoomLevel});
             mapModule.attachListeners();
         </script>
     </body>

@@ -2,6 +2,7 @@
 
 const MapModule = (function () {
     const globalState = {
+        contextPath: null,
         latitude : 0,
         longitude : 0,
         zoomLevel: 0,
@@ -9,7 +10,14 @@ const MapModule = (function () {
         markerId: 1,
         popupContents: {},
         map: null,
+        polyline: null,
     };
+
+    function init(contextPath, latitude, longitude, zoomLevel) {
+        console.log('MapModule init() called contextPath', contextPath, 'latitude', latitude, 'longitude', longitude, 'zoomLevel', zoomLevel);
+        globalState.contextPath = contextPath;
+        initMap(latitude, longitude, zoomLevel);
+    }
 
     function initMap(latitude, longitude, zoomLevel) {
         globalState.latitude = latitude;
@@ -67,6 +75,49 @@ const MapModule = (function () {
             return;
         }
 
+        const url = '/vehicle-route-planning/route/construct';
+
+        // Use fetch API or other AJAX methods
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(locations)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Assuming the response contains the route information
+            console.log(data);
+
+            if (globalState.polyline) {
+                globalState.polyline.removeFrom(globalState.map);
+            }
+
+            // Now you can plot the polyline on the map using the received data
+            globalState.polyline = L.polyline(
+                    data.polyline.map(point => [point.latitude, point.longitude]), 
+                    { color: 'blue' })
+                .addTo(globalState.map);
+            globalState.map.fitBounds(globalState.polyline.getBounds());
+
+            // Just added this code to check where intermediate points are, especially when the route is straight
+            /*
+            data.polyline.forEach(point => {
+                L.marker([point.latitude, point.longitude], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background-color: red; width: 10px; height: 10px; border-radius: 50%;"></div>',
+                        iconSize: [10, 10]
+                    })
+                }).addTo(globalState.map);
+            });
+            */
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle error, show an alert, etc.
+        });
     }
 
     function createPopupContent(sequence, markerId) {
@@ -139,7 +190,7 @@ const MapModule = (function () {
 
     // Return the public API
     return {
-        initMap: initMap,
+        init: init,
         attachListeners: attachListeners,
         deleteLocation: deleteLocation,
     };
