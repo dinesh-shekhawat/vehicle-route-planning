@@ -14,6 +14,7 @@
         <script src="${pageContext.request.contextPath}/js/map.js"></script>
         <script src="${pageContext.request.contextPath}/js/leaflet.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/Polyline.encoded.js"></script>
 
         <div class="container">
             <div class="row" id="control-center">

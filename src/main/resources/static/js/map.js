@@ -99,6 +99,11 @@ const MapModule = (function () {
                     data.polyline.map(point => [point.latitude, point.longitude]), 
                     { color: 'blue' })
                 .addTo(globalState.map);
+            
+            // If you want to use the encoded polyline, you can use the following code
+            // var encoded = '<encoded-plolyline>';
+            // globalState.polyline = L.Polyline.fromEncoded(encoded).addTo(globalState.map);
+
             globalState.map.fitBounds(globalState.polyline.getBounds());
 
             // Just added this code to check where intermediate points are, especially when the route is straight
