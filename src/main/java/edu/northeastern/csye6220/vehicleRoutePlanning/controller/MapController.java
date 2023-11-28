@@ -17,7 +17,7 @@ public class MapController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapController.class);
 	
-	private MapProperties mapProperties;
+	private final MapProperties mapProperties;
 	
 	@Autowired
 	public MapController(MapProperties mapProperties) {
