@@ -1,6 +1,5 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,14 +36,14 @@ public class RouteRestController {
 	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
 	public Map<String, ?> getType() {
-		RoutingService routingService = routingFactoryService.getRoutingService(RoutingFactoryService.STRAIGHT_LINE);
+		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		return routingService.getInformation();
 	}
 	
 	@PostMapping(value = "/construct", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Route constructRoute(@RequestBody List<Location> locations) {
-		RoutingService routingService = routingFactoryService.getRoutingService(RoutingFactoryService.STRAIGHT_LINE);
+		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		return routingService.getRoute(locations);
 	}
 

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.properties.RoutingProperties;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.RoutingFactoryService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.RoutingService;
 
@@ -19,14 +20,25 @@ public class RoutingFactoryServiceImpl implements RoutingFactoryService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RoutingFactoryServiceImpl.class);
 	
 	private final Map<String, RoutingService> routingServiceMap;
+	private final RoutingProperties routingProperties;
 	
 	@Autowired
-    public RoutingFactoryServiceImpl(List<RoutingService> routingServices) {
+    public RoutingFactoryServiceImpl(
+    		List<RoutingService> routingServices,
+    		RoutingProperties routingProperties) {
 		LOGGER.info("registering routingServices: {}", routingServices);
         this.routingServiceMap = routingServices
         		.stream()
         		.collect(Collectors.toMap(RoutingService::getType, Function.identity()));
+        
+        this.routingProperties = routingProperties;
+		LOGGER.info("loaded routingProperties: {}", routingProperties);
     }
+	
+	@Override
+	public RoutingService getDefaultRoutingService() {
+		return getRoutingService(routingProperties.getDefaultProvider());
+	}
 	
 	@Override
 	public RoutingService getRoutingService(String implementationName) {
