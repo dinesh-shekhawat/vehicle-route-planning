@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
 
-import edu.northeastern.csye6220.vehicleRoutePlanning.model.Location;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Point;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.RoutingProperties;
@@ -51,7 +51,7 @@ public class OSMRoutingServiceImpl implements RoutingService {
 	}
 
 	@Override
-	public Route getRoute(List<Location> locations) {
+	public Route getRoute(List<LocationModel> locations) {
 		LOGGER.trace("forming routes for locations: {}", locations);
 
 		Map<String, List<List<Double>>> requestPayload = new HashMap<>();
@@ -114,7 +114,7 @@ public class OSMRoutingServiceImpl implements RoutingService {
         return points;
 	}
 
-	private List<List<Double>> getCoordinatesList(List<Location> locations) {
+	private List<List<Double>> getCoordinatesList(List<LocationModel> locations) {
         return locations.stream()
                 .map(location -> List.of(location.getLongitude(), location.getLatitude()))
                 .collect(Collectors.toList());

@@ -3,14 +3,14 @@ package edu.northeastern.csye6220.vehicleRoutePlanning.model;
 import java.util.List;
 
 public class Route {
-	private List<Location> stops;
+	private List<LocationModel> stops;
 	private List<Point> polyline;
 
-	public List<Location> getStops() {
+	public List<LocationModel> getStops() {
 		return stops;
 	}
 
-	public void setStops(List<Location> stops) {
+	public void setStops(List<LocationModel> stops) {
 		this.stops = stops;
 	}
 

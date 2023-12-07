@@ -3,7 +3,7 @@ package edu.northeastern.csye6220.vehicleRoutePlanning.service;
 import java.util.List;
 import java.util.Map;
 
-import edu.northeastern.csye6220.vehicleRoutePlanning.model.Location;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 
 public interface RoutingService {
@@ -12,6 +12,6 @@ public interface RoutingService {
 	
 	Map<String, ?> getInformation();
 	
-	Route getRoute(List<Location> locations);
+	Route getRoute(List<LocationModel> locations);
 	
 }

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.northeastern.csye6220.vehicleRoutePlanning.model.Location;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Point;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.RoutingProperties;
@@ -41,7 +41,7 @@ public class StraightLineRoutingServiceImpl implements RoutingService {
 	}
 
 	@Override
-	public Route getRoute(List<Location> locations) {
+	public Route getRoute(List<LocationModel> locations) {
 		LOGGER.trace("forming routes for locations: {}", locations);
 
 		Route route = new Route();
@@ -53,8 +53,8 @@ public class StraightLineRoutingServiceImpl implements RoutingService {
 		
 		// Iterate through locations to create intermediate points in the polyline
 		for (int i = 0; i < locations.size() - 1; i++) {
-			Location start = locations.get(i);
-			Location end = locations.get(i + 1);
+			LocationModel start = locations.get(i);
+			LocationModel end = locations.get(i + 1);
 			double deltaLatitde = end.getLatitude() - start.getLatitude();
 			double deltaLongitude = end.getLongitude() - start.getLongitude();
 
@@ -72,7 +72,7 @@ public class StraightLineRoutingServiceImpl implements RoutingService {
 		}
 
 		// Add the last location as the final point in the polyline
-		Location lastLocation = locations.get(locations.size() - 1);
+		LocationModel lastLocation = locations.get(locations.size() - 1);
 		polyline.add(new Point(lastLocation.getLatitude(), lastLocation.getLongitude()));
 		
 		route.setPolyline(polyline);

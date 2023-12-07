@@ -80,6 +80,27 @@
             vehicleRoutingModule.init('${pageContext.request.contextPath}', ${latitude}, ${longitude}, ${zoomLevel});
             vehicleRoutingModule.attachListeners();
         </script>
+
+        <!-- Modal for searching vehicle location -->
+        <div class="modal fade" id="searchLocationModal" tabindex="-1" aria-labelledby="searchLocationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchLocationModalLabel">Search Vehicle Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Add your form elements for searching vehicle location here -->
+                        <label for="locationSearchInput" class="form-label">Enter Location:</label>
+                        <input type="text" class="form-control" id="locationSearchInput">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="vehicleRoutingModule.searchVehicleLocation()">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 
     </html>

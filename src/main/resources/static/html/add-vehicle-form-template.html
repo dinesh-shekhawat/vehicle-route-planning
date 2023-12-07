@@ -3,48 +3,54 @@
         <div class="accordion-header vehicle-accordion-header">
             <div class="accordion-button" type="button" data-bs-toggle="collapse"
                 data-bs-target="#${vehicleSubAccordionId}" aria-expanded="true" aria-controls="vehicleSubCollapse">
-                
+
                 <span class="me-5 vehicle-header-text">
                     ${vehicleNamePlaceholder}
-                </span>        
+                </span>
             </div>
         </div>
 
-        <div 
-            id="${vehicleSubAccordionId}" 
-            class="accordion-collapse collapse vehicle-sub-accordion" 
-            aria-labelledby="vehicleSubCollapse"
-            data-bs-parent="#vehicleSubAccordion">
+        <div id="${vehicleSubAccordionId}" class="accordion-collapse collapse vehicle-sub-accordion"
+            aria-labelledby="vehicleSubCollapse" data-bs-parent="#vehicleSubAccordion">
 
             <div class="accordion-body">
                 <form>
                     <div class="mb-3">
                         <div class="input-group">
-                            <span class="input-group-text" id="basic-addon1">${vehicleNameLabel}</span>
+                            <span class="input-group-text">${vehicleNameLabel}</span>
 
-                            <input 
-                                type="text" 
-                                class="form-control vehicle-name"
+                            <input type="text" class="form-control vehicle-name"
                                 placeholder="${vehicleNamePlaceholder}">
-                        </div>                        
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <div class="input-group">
-                            <span class="input-group-text" id="basic-addon1">${registrationNumberLabel}</span>
+                            <span class="input-group-text">${registrationNumberLabel}</span>
 
                             <input type="text" class="form-control registration-number"
-                            placeholder="${registrationNumberPlaceholder}">
-
+                                placeholder="${registrationNumberPlaceholder}">
                         </div>
-                        
                     </div>
 
                     <div class="mb-3">
                         <div class="input-group">
-                            <span class="input-group-text" id="basic-addon1">${capacityLabel}</span>
-                            <input type="text" class="form-control vehicle-capacity" placeholder="${capacityPlaceholder}">
+                            <span class="input-group-text">${capacityLabel}</span>
+                            <input type="text" class="form-control vehicle-capacity"
+                                placeholder="${capacityPlaceholder}">
+                        </div>
+                    </div>
 
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text">Location</span>
+                            <input type="text" class="form-control vehicle-location" readonly>
+                            <span 
+                                class="input-group-text btn btn-secondary search-vehicle-location-button"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#searchLocationModal">
+                                Search
+                            </span>
                         </div>
                     </div>
 

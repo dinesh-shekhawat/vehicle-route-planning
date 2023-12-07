@@ -7,6 +7,10 @@ const VehicleRoutingModule = (function () {
         longitude: 0,
         zoomLevel: 0,
         map: null,
+        VEHICLE_TYPE: 'vehicle',
+        vehicleMarkersMap: new Map(),
+        currentVehicleLocationSearchId: null,
+        locationDecimals: 4,
     };
 
     function init(contextPath, latitude, longitude, zoomLevel) {
@@ -70,6 +74,7 @@ const VehicleRoutingModule = (function () {
             capacityPlaceholder: 'Enter capacity',
             vehicleSubAccordionId: `vehicle-sub-accordion-${uniqueIdCounter}`,
             deleteIconPath: `${globalState.contextPath}/css/images/delete-icon.png`,
+            carIconPath: `${globalState.contextPath}/css/images/car-icon.png`,
         };
 
         // Load the template dynamically and replace placeholders
@@ -90,17 +95,58 @@ const VehicleRoutingModule = (function () {
                     vehicleListAccordion.appendChild(child.cloneNode(true));
                 });
 
-                // Scan the entire DOM for delete buttons and attach click event listeners
-                document.querySelectorAll('.delete-vehicle-button').forEach(deleteButton => {
-                    deleteButton.addEventListener('click', handleVehicleDeleteButtonClick);
-                });
+                vehicleListAccordion
+                    .querySelector('.delete-vehicle-button')
+                    .addEventListener('click', handleVehicleDeleteButtonClick);
 
-                // Scan the entire DOM for vehicle name input and attach click event listeners
-                document.querySelectorAll('.vehicle-name').forEach(deleteButton => {
-                    deleteButton.addEventListener('change', handleVehicleNameChange);
-                });
+                vehicleListAccordion
+                    .querySelector('.vehicle-name')
+                    .addEventListener('change', handleVehicleNameChange);
+
+                // vehicleListAccordion
+                //     .querySelector('.search-vehicle-location-button')
+                //     .addEventListener('click', handleVehiceLocationSearchButtonClick);
+
+                addMarkerOnMap(
+                    globalState.map.getCenter(), 
+                    dynamicValues.vehicleSubAccordionId, 
+                    dynamicValues.carIconPath,
+                    globalState.VEHICLE_TYPE);
+
+                syncMarkerValues();
+                syncMarkerPopups();
             })
             .catch(error => console.error('Error loading template:', error));
+    }
+
+    function syncMarkerValues() {
+        console.log('VehicleRoutingModule syncMarkerValues() called');
+
+        globalState.vehicleMarkersMap.forEach((marker, id) => {
+            const newLatLng = marker.getLatLng();
+            const roundedLatLng = {
+                lat: newLatLng.lat.toFixed(globalState.locationDecimals),
+                lng: newLatLng.lng.toFixed(globalState.locationDecimals),
+            };
+
+            const locationString = `${roundedLatLng.lat},${roundedLatLng.lng}`;
+            
+            const vehicleAccordion = document.getElementById(id);
+            const locationInput = vehicleAccordion.querySelector('.vehicle-location');
+            locationInput.value = locationString;
+        });
+    }
+
+    function syncMarkerPopups() {
+        console.log('VehicleRouting module syncMarkerPopups');
+
+        globalState.vehicleMarkersMap.forEach((marker, id) => {
+            const vehicleAccordion = document.getElementById(id);
+            const vehicleName = vehicleAccordion.querySelector('.vehicle-name').value;
+
+            const popupContent = `<strong>${vehicleName}</strong>`;
+            marker.bindPopup(popupContent);
+        });
     }
 
     function handleVehicleDeleteButtonClick() {
@@ -110,6 +156,11 @@ const VehicleRoutingModule = (function () {
 
         // Call deleteVehicle function with the retrieved ID
         deleteVehicle(vehicleSubAccordionId);
+    }
+
+    function searchVehicleLocation(vehicleSubAccordionId) {
+        console.log('VehicleRoutingModule searchVehicleLocation() called');
+        
     }
 
     function handleVehicleNameChange() {
@@ -122,6 +173,36 @@ const VehicleRoutingModule = (function () {
         console.log('Vehicle name:', vehicleName);
 
         vehicleAccordionHeader.querySelector('.vehicle-header-text').innerHTML = vehicleName;
+
+        syncMarkerPopups();
+    }
+
+    function addMarkerOnMap(location, id, iconPath, type) {    
+        // Create a marker with a custom icon
+        const customIcon = L.icon({
+            iconUrl: iconPath,
+            iconSize: [32, 32],
+        });
+    
+        const marker = L
+            .marker(location, { icon: customIcon, draggable: true, id: id })
+            .addTo(globalState.map);
+    
+        marker.on('dragend', handleMarkerDragEnd);
+
+        switch (type) {
+            case globalState.VEHICLE_TYPE:
+                console.log('updating vehicleMarkersMap');
+                globalState.vehicleMarkersMap.set(id, marker);
+                break;
+        }
+    }
+
+    function handleMarkerDragEnd(event) {
+        // const marker = event.target;
+        // const newLatLng = marker.getLatLng();
+        // console.log(`Marker with ID dragged to:`, newLatLng);
+        syncMarkerValues();
     }
 
     // Attach click listeners to HTML elements
@@ -156,7 +237,56 @@ const VehicleRoutingModule = (function () {
         vehicleNameInput.removeEventListener('change', handleVehicleNameChange);
 
         parent.remove();
+
+        const marker = globalState.vehicleMarkersMap.get(vehicleSubAccordionId);
+        marker.remove();
+        globalState.vehicleMarkersMap.delete(vehicleSubAccordionId);
+        
         updateVehicleAccordionItems();
+
+        syncMarkerMap(globalState.VEHICLE_TYPE);
+    }
+
+    function syncMarkerMap(type) {
+        switch (type) {
+            case globalState.VEHICLE_TYPE:
+                syncVehicleMarkerMap();
+                break;
+        }
+    }
+
+    function syncVehicleMarkerMap() {
+        console.log('VehicleRoutingModule syncMarkerMap() called');
+        
+        let deleteIndex = 0;
+        globalState.vehicleMarkersMap.forEach((marker, id) => {
+            const vehicleAccordion = document.getElementById(id);
+            if (!vehicleAccordion) {
+                return; 
+            }
+
+            deleteIndex++;
+        });
+
+        console.log('deleteIndex', deleteIndex);
+
+        const updatedMarkersMap = new Map();
+        globalState.vehicleMarkersMap.forEach((marker, id) => {
+            const currentIndex = parseInt(id.split('-').pop());
+            const newIndex = currentIndex - 1;
+
+            // Check if the current index is greater than the delete index
+            if (currentIndex > deleteIndex) {
+                const newKey = `vehicle-sub-accordion-${newIndex}`;
+                updatedMarkersMap.set(newKey, marker);
+            } else {
+                // If the current index is less than or equal to the delete index, keep the original key
+                updatedMarkersMap.set(id, marker);
+            }
+        });
+
+        // Update globalState markersMap
+        globalState.vehicleMarkersMap = updatedMarkersMap;
     }
 
     // Update accordion items after deleting a vehicle
@@ -185,5 +315,6 @@ const VehicleRoutingModule = (function () {
     return {
         init: init,
         attachListeners: attachListeners,
+        searchVehicleLocation: searchVehicleLocation
     };
 })();

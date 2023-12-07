@@ -1,6 +1,6 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.model;
 
-public class Location {
+public class LocationModel {
     private String name;
     private double latitude;
     private double longitude;
@@ -26,7 +26,7 @@ public class Location {
 	
 	@Override
 	public String toString() {
-		return "Location [name=" + name + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+		return "LocationModel [name=" + name + ", latitude=" + latitude + ", longitude=" + longitude + "]";
 	}
     
 }
