@@ -28,3 +28,12 @@ body {
 .popup-form {
     max-width: 300px;
 }
+
+#searchResultsDropdown {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.hoverable:hover {
+    cursor: pointer;
+}

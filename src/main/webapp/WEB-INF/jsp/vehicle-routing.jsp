@@ -81,22 +81,28 @@
             vehicleRoutingModule.attachListeners();
         </script>
 
-        <!-- Modal for searching vehicle location -->
-        <div class="modal fade" id="searchLocationModal" tabindex="-1" aria-labelledby="searchLocationModalLabel" aria-hidden="true">
+        <!-- Modal for searching vehicle -->
+        <div class="modal fade" id="searchVehicleModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="searchLocationModalLabel">Search Vehicle Location</h5>
+                        <h5 class="modal-title">Search Vehicle</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Add your form elements for searching vehicle location here -->
-                        <label for="locationSearchInput" class="form-label">Enter Location:</label>
-                        <input type="text" class="form-control" id="locationSearchInput">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="vehicleRoutingModule.searchVehicleLocation()">Search</button>
+                        <!-- Add your form elements for searching vehicle here -->
+                        <div class="input-group">
+                            <input type="text" id="vehicleSearchInput" class="form-control vehicle-capacity"
+                                placeholder="Search Vehicle">
+                            <span 
+                                class="input-group-text btn btn-secondary"
+                                onclick="vehicleRoutingModule.searchVehicleLocation()">
+                                Search
+                            </span>
+                        </div>
+
+                        <!-- Dropdown container for search results -->
+                        <div id="searchResultsDropdown" class="dropdown p-2"></div>
                     </div>
                 </div>
             </div>

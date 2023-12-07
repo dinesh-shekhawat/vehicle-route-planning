@@ -21,6 +21,13 @@
 
                             <input type="text" class="form-control vehicle-name"
                                 placeholder="${vehicleNamePlaceholder}">
+
+                            <span 
+                                class="input-group-text btn btn-secondary search-vehicle-button"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#searchVehicleModal" >
+                                Search
+                            </span>
                         </div>
                     </div>
 
@@ -36,8 +43,8 @@
                     <div class="mb-3">
                         <div class="input-group">
                             <span class="input-group-text">${capacityLabel}</span>
-                            <input type="text" class="form-control vehicle-capacity"
-                                placeholder="${capacityPlaceholder}">
+                            <input type="number" class="form-control vehicle-capacity"
+                                placeholder="${capacityPlaceholder}" min="1">
                         </div>
                     </div>
 
@@ -45,12 +52,6 @@
                         <div class="input-group">
                             <span class="input-group-text">Location</span>
                             <input type="text" class="form-control vehicle-location" readonly>
-                            <span 
-                                class="input-group-text btn btn-secondary search-vehicle-location-button"
-                                data-bs-toggle="modal" 
-                                data-bs-target="#searchLocationModal">
-                                Search
-                            </span>
                         </div>
                     </div>
 
