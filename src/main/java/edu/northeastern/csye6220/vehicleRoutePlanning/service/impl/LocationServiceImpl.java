@@ -12,31 +12,31 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.northeastern.csye6220.vehicleRoutePlanning.model.VehicleModel;
-import edu.northeastern.csye6220.vehicleRoutePlanning.service.VehicleService;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
+import edu.northeastern.csye6220.vehicleRoutePlanning.service.LocationService;
 
 @Service
-public class VehicleServiceImpl implements VehicleService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(VehicleServiceImpl.class);
+public class LocationServiceImpl implements LocationService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LocationServiceImpl.class);
 
 	 // File to store data
-    private static final String DATA_FILE_PATH = "/home/ubuntu/NEU/semester-4/CSYE_6220-Enterprise_Software_Design/vrp-storage/vehicles.json";
+    private static final String DATA_FILE_PATH = "/home/ubuntu/NEU/semester-4/CSYE_6220-Enterprise_Software_Design/vrp-storage/locations.json";
 	
 	@Override
-	public VehicleModel save(VehicleModel vehicleModel) {
+	public LocationModel save(LocationModel vehicleModel) {
 		// TODO LOGIC WIll change when hiberate is integrated
 		LOGGER.trace("saving vehicle: {}", vehicleModel);
-		List<VehicleModel> data = loadDataFromFile();
+		List<LocationModel> data = loadDataFromFile();
 		data.add(vehicleModel);
 		saveDataToFile(data);
 		return vehicleModel;
 	}
 
 	@Override
-	public List<VehicleModel> findByNameOrRegistration(String query) {
+	public List<LocationModel> findByName(String query) {
 	    // TODO: Replace this logic with Hibernate-based implementation
 		
-		List<VehicleModel> data = loadDataFromFile();
+		List<LocationModel> data = loadDataFromFile();
 		
 		if (query == null) {
 			LOGGER.warn("null query passed, it should not be called like that");
@@ -45,12 +45,11 @@ public class VehicleServiceImpl implements VehicleService {
 		
 		LOGGER.trace("querying vehicles for: {}", query);
 		
-		List<VehicleModel> result = new ArrayList<>();
+		List<LocationModel> result = new ArrayList<>();
 
-	    for (VehicleModel vehicle : data) {
-	        if (vehicle.getName().toLowerCase().contains(query.toLowerCase().trim()) ||
-	            vehicle.getRegistration().toLowerCase().contains(query.toLowerCase().trim())) {
-	            result.add(vehicle);
+	    for (LocationModel location : data) {
+	        if (location.getName().toLowerCase().contains(query.toLowerCase().trim()) ) {
+	            result.add(location);
 	        }
 	    }
 
@@ -58,7 +57,7 @@ public class VehicleServiceImpl implements VehicleService {
 	}
 
 	@Override
-	public List<VehicleModel> saveList(List<VehicleModel> vehicleModels) {
+	public List<LocationModel> saveList(List<LocationModel> vehicleModels) {
 		LOGGER.debug("saving vehicles of size: {}", vehicleModels != null ? vehicleModels.size() : "NULL");
 		
 		if (vehicleModels == null) {
@@ -67,23 +66,23 @@ public class VehicleServiceImpl implements VehicleService {
 		}
 		
 		if (LOGGER.isTraceEnabled()) {
-			for (VehicleModel vehicleModel : vehicleModels) {
+			for (LocationModel vehicleModel : vehicleModels) {
 				LOGGER.trace("vehicle: {}", vehicleModel);
 			}
 		}
 		
 		// TODO LOGIC WIll change when hiberate is integrated
-		List<VehicleModel> data = loadDataFromFile();
+		List<LocationModel> data = loadDataFromFile();
 		data.addAll(vehicleModels);
 		saveDataToFile(data);
 		return vehicleModels;
 	}
 	
 	// Helper method to load data from file
-    private List<VehicleModel> loadDataFromFile() {
+    private List<LocationModel> loadDataFromFile() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(new File(DATA_FILE_PATH), new TypeReference<List<VehicleModel>>() {});
+            return objectMapper.readValue(new File(DATA_FILE_PATH), new TypeReference<List<LocationModel>>() {});
         } catch (Exception e) {
             LOGGER.warn("Error loading data from file", e);
             return new ArrayList<>();
@@ -91,7 +90,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
     
     // Helper method to save data to file
-    private void saveDataToFile(List<VehicleModel> data) {
+    private void saveDataToFile(List<LocationModel> data) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(DATA_FILE_PATH), data);
