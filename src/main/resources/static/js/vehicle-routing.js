@@ -29,6 +29,26 @@ const VehicleRoutingModule = (function () {
     // Solve the vehicle routing problem
     function solve() {
         console.log('VehicleRoutingModule solve() called');
+
+        // Collect all vehicles in the accordion
+        const vehicleAccordion = document.getElementById('vehicle-list-accordion');
+
+        // Collect all vehicles in the accordion
+        const accordionItems = vehicleAccordion.querySelectorAll('.accordion');
+
+        // Create an array to store vehicle information
+        const vehiclesArray = Array.from(accordionItems).map(accordionItem => {
+            const vehicleInfo = {
+                name: accordionItem.querySelector('.vehicle-name').value,
+                registrationNumber: accordionItem.querySelector('.registration-number').value,
+                capacity: accordionItem.querySelector('.vehicle-capacity').value,
+            };
+
+            return vehicleInfo;
+        });
+
+        // Now 'vehiclesArray' contains the information of all vehicles
+        console.log('Vehicles Array:', vehiclesArray);
     }
 
     // Add a vehicle to the map
@@ -74,6 +94,11 @@ const VehicleRoutingModule = (function () {
                 document.querySelectorAll('.delete-vehicle-button').forEach(deleteButton => {
                     deleteButton.addEventListener('click', handleVehicleDeleteButtonClick);
                 });
+
+                // Scan the entire DOM for vehicle name input and attach click event listeners
+                document.querySelectorAll('.vehicle-name').forEach(deleteButton => {
+                    deleteButton.addEventListener('change', handleVehicleNameChange);
+                });
             })
             .catch(error => console.error('Error loading template:', error));
     }
@@ -85,6 +110,18 @@ const VehicleRoutingModule = (function () {
 
         // Call deleteVehicle function with the retrieved ID
         deleteVehicle(vehicleSubAccordionId);
+    }
+
+    function handleVehicleNameChange() {
+        console.log('Vehicle name changed');
+        // Retrieve the vehicleSubAccordionId from the parent accordion header item
+        const accordionItem = this.closest('.accordion-item');
+        const vehicleAccordionHeader = accordionItem.querySelector('.vehicle-accordion-header');
+        
+        const vehicleName = this.value;
+        console.log('Vehicle name:', vehicleName);
+
+        vehicleAccordionHeader.querySelector('.vehicle-header-text').innerHTML = vehicleName;
     }
 
     // Attach click listeners to HTML elements
@@ -114,6 +151,9 @@ const VehicleRoutingModule = (function () {
 
         const deleteButton = accordionItem.querySelector('.delete-vehicle-button');
         deleteButton.removeEventListener('click', handleVehicleDeleteButtonClick);
+
+        const vehicleNameInput = accordionItem.querySelector('.vehicle-name');
+        vehicleNameInput.removeEventListener('change', handleVehicleNameChange);
 
         parent.remove();
         updateVehicleAccordionItems();

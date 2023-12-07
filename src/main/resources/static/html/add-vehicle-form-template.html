@@ -1,10 +1,10 @@
 <div class="accordion">
     <div class="accordion-item my-2">
-        <div class="accordion-header">
+        <div class="accordion-header vehicle-accordion-header">
             <div class="accordion-button" type="button" data-bs-toggle="collapse"
                 data-bs-target="#${vehicleSubAccordionId}" aria-expanded="true" aria-controls="vehicleSubCollapse">
                 
-                <span class="me-5">
+                <span class="me-5 vehicle-header-text">
                     ${vehicleNamePlaceholder}
                 </span>        
             </div>
@@ -21,7 +21,7 @@
                     <div class="mb-3">
                         <label for="vehicleName" class="form-label">${vehicleNameLabel}</label>
 
-                        <input type="text" class="form-control" id="vehicleName"
+                        <input type="text" class="form-control vehicle-name"
                             placeholder="${vehicleNamePlaceholder}">
                     </div>
 
@@ -30,13 +30,13 @@
                             ${registrationNumberLabel}
                         </label>
 
-                        <input type="text" class="form-control" id="registrationNumber"
+                        <input type="text" class="form-control registration-number"
                             placeholder="${registrationNumberPlaceholder}">
                     </div>
 
                     <div class="mb-3">
                         <label for="capacity" class="form-label">${capacityLabel}</label>
-                        <input type="text" class="form-control" id="capacity" placeholder="${capacityPlaceholder}">
+                        <input type="text" class="form-control vehicle-capacity" placeholder="${capacityPlaceholder}">
                     </div>
 
                     <div class="mb-3">
