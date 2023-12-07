@@ -28,7 +28,7 @@
             </div>
 
             <div class="row p-2">
-                <div class="col-md-3">
+                <div class="col-md-5">
                     <div class="accordion" id="accordion-panel">
                         <div class="accordion-item">
                             <div class="accordion-header">
@@ -69,7 +69,7 @@
                     </div>                    
                 </div>
 
-                <div class="col-md-9">
+                <div class="col-md-7">
                     <div id="map"></div>
                 </div>
             </div>

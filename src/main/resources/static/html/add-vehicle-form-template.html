@@ -19,24 +19,33 @@
             <div class="accordion-body">
                 <form>
                     <div class="mb-3">
-                        <label for="vehicleName" class="form-label">${vehicleNameLabel}</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1">${vehicleNameLabel}</span>
 
-                        <input type="text" class="form-control vehicle-name"
-                            placeholder="${vehicleNamePlaceholder}">
+                            <input 
+                                type="text" 
+                                class="form-control vehicle-name"
+                                placeholder="${vehicleNamePlaceholder}">
+                        </div>                        
                     </div>
 
                     <div class="mb-3">
-                        <label for="registrationNumber" class="form-label">
-                            ${registrationNumberLabel}
-                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1">${registrationNumberLabel}</span>
 
-                        <input type="text" class="form-control registration-number"
+                            <input type="text" class="form-control registration-number"
                             placeholder="${registrationNumberPlaceholder}">
+
+                        </div>
+                        
                     </div>
 
                     <div class="mb-3">
-                        <label for="capacity" class="form-label">${capacityLabel}</label>
-                        <input type="text" class="form-control vehicle-capacity" placeholder="${capacityPlaceholder}">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1">${capacityLabel}</span>
+                            <input type="text" class="form-control vehicle-capacity" placeholder="${capacityPlaceholder}">
+
+                        </div>
                     </div>
 
                     <div class="mb-3">
