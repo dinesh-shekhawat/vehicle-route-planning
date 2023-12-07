@@ -60,7 +60,7 @@
                                         Add Vehicle
                                     </div>
 
-                                    <div class="accordion" id="vehicle-list-accordion">
+                                    <div id="vehicle-list-accordion">
                                         
                                     </div>
                                 </div>

@@ -71,17 +71,20 @@ const VehicleRoutingModule = (function () {
                 });
 
                 // Scan the entire DOM for delete buttons and attach click event listeners
-                document.querySelectorAll('.delete-button').forEach(deleteButton => {
-                    deleteButton.addEventListener('click', function () {
-                        // Retrieve the vehicleSubAccordionId from the parent accordion item
-                        const vehicleSubAccordionId = this.closest('.vehicle-sub-accordion').id;
-
-                        // Call deleteVehicle function with the retrieved ID
-                        deleteVehicle(vehicleSubAccordionId);
-                    });
+                document.querySelectorAll('.delete-vehicle-button').forEach(deleteButton => {
+                    deleteButton.addEventListener('click', handleVehicleDeleteButtonClick);
                 });
             })
             .catch(error => console.error('Error loading template:', error));
+    }
+
+    function handleVehicleDeleteButtonClick() {
+        console.log('Delete button callback clicked');
+        // Retrieve the vehicleSubAccordionId from the parent accordion item
+        const vehicleSubAccordionId = this.closest('.vehicle-sub-accordion').id;
+
+        // Call deleteVehicle function with the retrieved ID
+        deleteVehicle(vehicleSubAccordionId);
     }
 
     // Attach click listeners to HTML elements
@@ -104,11 +107,38 @@ const VehicleRoutingModule = (function () {
         // Find the closest parent with class accordion
         const accordionItem = document.getElementById(vehicleSubAccordionId);
         const parent = accordionItem.closest('.accordion');
-        if (parent) {
-            parent.remove();
-        } else {
+        if (!parent) {
             console.warn('Accordion item not found for deletion.');
+            return;
         }
+
+        const deleteButton = accordionItem.querySelector('.delete-vehicle-button');
+        deleteButton.removeEventListener('click', handleVehicleDeleteButtonClick);
+
+        parent.remove();
+        updateVehicleAccordionItems();
+    }
+
+    // Update accordion items after deleting a vehicle
+    function updateVehicleAccordionItems() {
+        // Find the container element
+        const accordionContainer = document.getElementById('vehicle-list-accordion');
+
+        // Select all remaining accordion items
+        const accordionItems = accordionContainer.querySelectorAll('.accordion');
+
+        // Iterate over each accordion item and update ID and data-bs-target
+        accordionItems.forEach((accordionItem, index) => {
+            const newId = `vehicle-sub-accordion-${index}`; // Implement your logic to generate a new ID
+            
+            // Update specific elements inside the accordion item
+            const accordionButton = accordionItem.querySelector('.accordion-button');
+            const accordionCollapse = accordionItem.querySelector('.accordion-collapse');
+
+            // Update the ID and data-bs-target of specific elements
+            accordionButton.dataset.bsTarget = `#${newId}`;
+            accordionCollapse.id = newId;
+        });
     }
 
     // Return the public API
