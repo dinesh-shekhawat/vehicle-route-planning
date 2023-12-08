@@ -652,7 +652,7 @@ const VehicleRoutingModule = (function () {
         const vehicleSubAccordionId = globalState.currentVehicleAccordionId;
         const vehicleAccordion = document.getElementById(vehicleSubAccordionId);
         vehicleAccordion.querySelector('.vehicle-name').value = selectedItem.name;
-        vehicleAccordion.querySelector('.registration-number').value = selectedItem.registration;
+        vehicleAccordion.querySelector('.registration-number').value = selectedItem.registrationNumber;
         vehicleAccordion.querySelector('.vehicle-capacity').value = selectedItem.capacity;
 
         const parent = vehicleAccordion.closest('.accordion-item');
