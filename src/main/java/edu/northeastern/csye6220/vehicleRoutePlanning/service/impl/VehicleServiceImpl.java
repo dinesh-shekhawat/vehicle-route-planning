@@ -49,7 +49,7 @@ public class VehicleServiceImpl implements VehicleService {
 
 	    for (VehicleModel vehicle : data) {
 	        if (vehicle.getName().toLowerCase().contains(query.toLowerCase().trim()) ||
-	            vehicle.getRegistration().toLowerCase().contains(query.toLowerCase().trim())) {
+	            vehicle.getRegistrationNumber().toLowerCase().contains(query.toLowerCase().trim())) {
 	            result.add(vehicle);
 	        }
 	    }

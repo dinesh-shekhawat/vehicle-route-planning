@@ -44,20 +44,97 @@ const VehicleRoutingModule = (function () {
         console.log('VehicleRoutingModule solve() called');
 
         const vehicleAccordion = document.getElementById('vehicle-list-accordion');
-
-        const accordionItems = vehicleAccordion.querySelectorAll('.accordion');
-
-        const vehiclesArray = Array.from(accordionItems).map(accordionItem => {
+        const vehicleAccordionItems = vehicleAccordion.querySelectorAll('.accordion');
+        const vehiclesArray = Array.from(vehicleAccordionItems).map(accordionItem => {
             const vehicleInfo = {
                 name: accordionItem.querySelector('.vehicle-name').value,
                 registrationNumber: accordionItem.querySelector('.registration-number').value,
-                capacity: accordionItem.querySelector('.vehicle-capacity').value,
+                capacity: parseInt(accordionItem.querySelector('.vehicle-capacity').value),
             };
 
             return vehicleInfo;
         });
 
-        console.log('Vehicles Array:', vehiclesArray);
+        const serviceAccordion = document.getElementById('service-list-accordion');
+        const serviceAccordionItems = serviceAccordion.querySelectorAll('.accordion');
+        const servicesArray = Array.from(serviceAccordionItems).map(serviceAccordionItem => {
+            const locationValue = serviceAccordionItem.querySelector('.service-location').value;
+            const [latitude, longitude] = locationValue.split(',');
+
+            const serviceInfo = {
+                name: serviceAccordionItem.querySelector('.service-name').value,
+                location: {
+                    latitude: parseFloat(latitude),
+                    longitude: parseFloat(longitude)
+                },
+            };
+
+            return serviceInfo;
+        });
+
+        const deliveryAccordion = document.getElementById('delivery-list-accordion');
+        const deliveryAccordionItems = deliveryAccordion.querySelectorAll('.accordion');
+        const deliveriesArray = Array.from(deliveryAccordionItems).map(deliveryAccordionItem => {
+            const locationValue = deliveryAccordionItem.querySelector('.delivery-location').value;
+            const [latitude, longitude] = locationValue.split(',');
+
+            const deliveryInfo = {
+                name: deliveryAccordionItem.querySelector('.delivery-name').value,
+                location: {
+                    latitude: parseFloat(latitude),
+                    longitude: parseFloat(longitude)
+                },
+            };
+
+            return deliveryInfo;
+        });
+
+        const shipmentAccordion = document.getElementById('shipment-list-accordion');
+        const shipmentAccordionItems = shipmentAccordion.querySelectorAll('.accordion');
+        const shipmentsArray = Array.from(shipmentAccordionItems).map(shipmentAccordionItem => {
+            const sourceLocationValue = shipmentAccordionItem.querySelector('.shipment-source-location').value;
+            const destinationLocationValue = shipmentAccordionItem.querySelector('.shipment-destination-location').value;
+
+            const [sourceLatitude, sourceLongitude] = sourceLocationValue.split(',');
+            const [destinationLatitude, destinationLongitude] = destinationLocationValue.split(',');
+
+            const shipmentInfo = {
+                name: shipmentAccordionItem.querySelector('.shipment-name').value,
+                sourceLocation: {
+                    latitude: parseFloat(sourceLatitude),
+                    longitude: parseFloat(sourceLongitude)
+                },
+                destinationLocation: {
+                    latitude: parseFloat(destinationLatitude),
+                    longitude: parseFloat(destinationLongitude)
+                },
+            };
+
+            return shipmentInfo;
+        });
+
+        const vehicleRoutingInfo = {
+            vehicles: vehiclesArray,
+            services: servicesArray,
+            deliveries: deliveriesArray,
+            shipments: shipmentsArray,
+        };
+
+        console.log('vehicleRoutingInfo', vehicleRoutingInfo);
+
+        fetch(
+            `${globalState.contextPath}/vehicle-routing-problem-solver`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json',},
+            body: JSON.stringify(vehicleRoutingInfo),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response from server:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 
     function addVehicle() {
@@ -111,8 +188,8 @@ const VehicleRoutingModule = (function () {
                     .addEventListener('change', handleVehicleNameChange);
 
                 addMarkerOnMap(
-                    globalState.map.getCenter(), 
-                    dynamicValues.vehicleSubAccordionId, 
+                    globalState.map.getCenter(),
+                    dynamicValues.vehicleSubAccordionId,
                     dynamicValues.carIconPath,
                     globalState.VEHICLE_TYPE);
 
@@ -121,7 +198,7 @@ const VehicleRoutingModule = (function () {
             })
             .catch(error => console.error('Error loading template:', error));
     }
-    
+
     function addService() {
         console.log('VehicleRoutingModule addService() called');
 
@@ -165,8 +242,8 @@ const VehicleRoutingModule = (function () {
                     .addEventListener('change', handleServiceNameChange);
 
                 addMarkerOnMap(
-                    globalState.map.getCenter(), 
-                    dynamicValues.serviceSubAccordionId, 
+                    globalState.map.getCenter(),
+                    dynamicValues.serviceSubAccordionId,
                     dynamicValues.markerIconPath,
                     globalState.SERVICE_TYPE);
 
@@ -205,7 +282,7 @@ const VehicleRoutingModule = (function () {
                 });
 
                 const subAccordion = deliveryListAccordion.querySelector(`#${dynamicValues.deliverySubAccordionId}`);
-            
+
                 subAccordion
                     .querySelector('.search-location-button')
                     .addEventListener('click', handleDeliveryLocationSearchButtonClick);
@@ -219,8 +296,8 @@ const VehicleRoutingModule = (function () {
                     .addEventListener('change', handleDeliveryNameChange);
 
                 addMarkerOnMap(
-                    globalState.map.getCenter(), 
-                    dynamicValues.deliverySubAccordionId, 
+                    globalState.map.getCenter(),
+                    dynamicValues.deliverySubAccordionId,
                     dynamicValues.markerIconPath,
                     globalState.DELIVERY_TYPE);
 
@@ -277,14 +354,14 @@ const VehicleRoutingModule = (function () {
                     .addEventListener('change', handleShipmentNameChange);
 
                 addMarkerOnMap(
-                    globalState.map.getCenter(), 
-                    dynamicValues.shipmentSubAccordionId, 
+                    globalState.map.getCenter(),
+                    dynamicValues.shipmentSubAccordionId,
                     dynamicValues.markerIconPath,
                     globalState.SHIPMENT_SOURCE_TYPE);
 
                 addMarkerOnMap(
-                    globalState.map.getCenter(), 
-                    dynamicValues.shipmentSubAccordionId, 
+                    globalState.map.getCenter(),
+                    dynamicValues.shipmentSubAccordionId,
                     dynamicValues.markerIconPath,
                     globalState.SHIPMENT_DESTINATION_TYPE);
 
@@ -305,7 +382,7 @@ const VehicleRoutingModule = (function () {
             };
 
             const locationString = `${roundedLatLng.lat},${roundedLatLng.lng}`;
-            
+
             const vehicleAccordion = document.getElementById(id);
             const locationInput = vehicleAccordion.querySelector('.vehicle-location');
             locationInput.value = locationString;
@@ -319,7 +396,7 @@ const VehicleRoutingModule = (function () {
             };
 
             const locationString = `${roundedLatLng.lat},${roundedLatLng.lng}`;
-            
+
             const serviceAccordion = document.getElementById(id);
             const locationInput = serviceAccordion.querySelector('.service-location');
             locationInput.value = locationString;
@@ -333,7 +410,7 @@ const VehicleRoutingModule = (function () {
             };
 
             const locationString = `${roundedLatLng.lat},${roundedLatLng.lng}`;
-            
+
             const deliveryAccordion = document.getElementById(id);
             const locationInput = deliveryAccordion.querySelector('.delivery-location');
             locationInput.value = locationString;
@@ -347,7 +424,7 @@ const VehicleRoutingModule = (function () {
             };
 
             const locationString = `${roundedLatLng.lat},${roundedLatLng.lng}`;
-            
+
             const shipmentAccordion = document.getElementById(id);
             const locationInput = shipmentAccordion.querySelector('.shipment-source-location');
             locationInput.value = locationString;
@@ -361,7 +438,7 @@ const VehicleRoutingModule = (function () {
             };
 
             const locationString = `${roundedLatLng.lat},${roundedLatLng.lng}`;
-            
+
             const shipmentAccordion = document.getElementById(id);
             const locationInput = shipmentAccordion.querySelector('.shipment-destination-location');
             locationInput.value = locationString;
@@ -475,7 +552,7 @@ const VehicleRoutingModule = (function () {
     function handleServiceDeleteButtonClick() {
         console.log('Service Delete button callback clicked');
         const serviceSubAccordionId = this.closest('.service-sub-accordion').id;
-        deleteService(serviceSubAccordionId);   
+        deleteService(serviceSubAccordionId);
     }
 
     function handleDeliveryDeleteButtonClick() {
@@ -492,7 +569,7 @@ const VehicleRoutingModule = (function () {
 
     function searchVehicle() {
         console.log('VehicleRoutingModule searchVehicle() called');
-        
+
         const vehicleSearchInput = document.getElementById('vehicle-search-input');
         const query = vehicleSearchInput.value;
 
@@ -521,7 +598,7 @@ const VehicleRoutingModule = (function () {
     function handleVehicleSearchResults(results) {
         const dropdownContainer = document.getElementById('searchVehicleDropdown');
         dropdownContainer.innerHTML = '';
-    
+
         results.forEach(result => {
             const dropdownItem = document.createElement('div');
             dropdownItem.classList.add('hoverable');
@@ -531,11 +608,11 @@ const VehicleRoutingModule = (function () {
             dropdownItem.classList.add('mb-2');
 
             dropdownItem.textContent = `${result.name} - ${result.registration} - Capacity: ${result.capacity}`;
-    
+
             dropdownItem.addEventListener('click', () => {
                 handleVehicleDropdownItemClick(result);
             });
-    
+
             dropdownContainer.appendChild(dropdownItem);
         });
     }
@@ -543,7 +620,7 @@ const VehicleRoutingModule = (function () {
     function handleLocationSearchResults(results) {
         const dropdownContainer = document.getElementById('searchLocationDropdown');
         dropdownContainer.innerHTML = '';
-    
+
         results.forEach(result => {
             const dropdownItem = document.createElement('div');
             dropdownItem.classList.add('hoverable');
@@ -553,15 +630,15 @@ const VehicleRoutingModule = (function () {
             dropdownItem.classList.add('mb-2');
 
             dropdownItem.textContent = `${result.name} (${result.latitude},${result.longitude})`;
-    
+
             dropdownItem.addEventListener('click', () => {
                 handleLocationDropdownItemClick(result);
             });
-    
+
             dropdownContainer.appendChild(dropdownItem);
         });
     }
-    
+
     function handleVehicleDropdownItemClick(selectedItem) {
         console.log('Selected Vehicle:', selectedItem);
 
@@ -618,11 +695,11 @@ const VehicleRoutingModule = (function () {
 
     function handleServiceLocationDropdownItemClick(selectedItem) {
         console.log('handleServiceLocationDropdownItemClick Location:', selectedItem);
-    
+
         const serviceSubAccordionId = globalState.currentServiceAccordionId;
         const serviceAccordion = document.getElementById(serviceSubAccordionId);
         serviceAccordion.querySelector('.service-location').value = `${selectedItem.latitude},${selectedItem.longitude}`;
-    
+
         globalState
             .serviceMarkersMap
             .get(serviceSubAccordionId)
@@ -631,11 +708,11 @@ const VehicleRoutingModule = (function () {
 
     function handleDeliveryLocationDropdownItemClick(selectedItem) {
         console.log('handleDeliveryLocationDropdownItemClick Location:', selectedItem);
-    
+
         const deliverySubAccordionId = globalState.currentDeliveryAccordionId;
         const deliveryAccordion = document.getElementById(deliverySubAccordionId);
         deliveryAccordion.querySelector('.delivery-location').value = `${selectedItem.latitude},${selectedItem.longitude}`;
-    
+
         globalState
             .deliveryMarkersMap
             .get(deliverySubAccordionId)
@@ -644,35 +721,35 @@ const VehicleRoutingModule = (function () {
 
     function handleShipmentSourceLocationDropdownItemClick(selectedItem) {
         console.log('handleShipmentSourceLocationDropdownItemClick Location:', selectedItem);
-    
+
         const sourceSubAccordionId = globalState.currentShipmentAccordionId;
         const sourceAccordion = document.getElementById(sourceSubAccordionId);
         sourceAccordion.querySelector('.shipment-source-location').value = `${selectedItem.latitude},${selectedItem.longitude}`;
-    
+
         globalState
             .shipmentSourceMarkersMap
             .get(sourceSubAccordionId)
             .setLatLng([selectedItem.latitude, selectedItem.longitude]);
     }
-    
+
     function handleShipmentDestinationLocationDropdownItemClick(selectedItem) {
         console.log('handleShipmentDestinationLocationDropdownItemClick Location:', selectedItem);
-    
+
         const destinationSubAccordionId = globalState.currentShipmentAccordionId;
         const destinationAccordion = document.getElementById(destinationSubAccordionId);
         destinationAccordion.querySelector('.shipment-destination-location').value = `${selectedItem.latitude},${selectedItem.longitude}`;
-    
+
         globalState
             .shipmentDestinationMarkersMap
             .get(destinationSubAccordionId)
             .setLatLng([selectedItem.latitude, selectedItem.longitude]);
     }
-        
+
     function handleVehicleNameChange() {
         console.log('Vehicle name changed');
         const accordionItem = this.closest('.accordion-item');
         const vehicleAccordionHeader = accordionItem.querySelector('.vehicle-accordion-header');
-        
+
         const vehicleName = this.value;
         console.log('Vehicle name:', vehicleName);
 
@@ -685,7 +762,7 @@ const VehicleRoutingModule = (function () {
         console.log('Service name changed');
         const accordionItem = this.closest('.accordion-item');
         const serviceAccordionHeader = accordionItem.querySelector('.service-accordion-header');
-        
+
         const serviceName = this.value;
         console.log('Service name:', serviceName);
 
@@ -698,7 +775,7 @@ const VehicleRoutingModule = (function () {
         console.log('Delivery name changed');
         const accordionItem = this.closest('.accordion-item');
         const deliveryAccordionHeader = accordionItem.querySelector('.delivery-accordion-header');
-        
+
         const deliveryName = this.value;
         console.log('Delivery name:', deliveryName);
 
@@ -711,7 +788,7 @@ const VehicleRoutingModule = (function () {
         console.log('Delivery name changed');
         const accordionItem = this.closest('.accordion-item');
         const shipmentAccordionHeader = accordionItem.querySelector('.shipment-accordion-header');
-        
+
         const shipmentName = this.value;
         console.log('Shipment name:', shipmentName);
 
@@ -720,16 +797,16 @@ const VehicleRoutingModule = (function () {
         syncMarkerPopups();
     }
 
-    function addMarkerOnMap(location, id, iconPath, type) {    
+    function addMarkerOnMap(location, id, iconPath, type) {
         const customIcon = L.icon({
             iconUrl: iconPath,
             iconSize: [32, 32],
         });
-    
+
         const marker = L
             .marker(location, { icon: customIcon, draggable: true, id: id })
             .addTo(globalState.map);
-    
+
         marker.on('dragend', handleMarkerDragEnd);
 
         switch (type) {
@@ -818,7 +895,7 @@ const VehicleRoutingModule = (function () {
         const marker = globalState.vehicleMarkersMap.get(vehicleSubAccordionId);
         marker.remove();
         globalState.vehicleMarkersMap.delete(vehicleSubAccordionId);
-        
+
         updateVehicleAccordionItems();
 
         syncMarkerMap(globalState.VEHICLE_TYPE);
@@ -826,7 +903,7 @@ const VehicleRoutingModule = (function () {
 
     function deleteService(serviceSubAccordionId) {
         console.log('VehicleRoutingModule deleteService() called with serviceSubAccordionId', serviceSubAccordionId);
-        
+
         const accordionItem = document.getElementById(serviceSubAccordionId);
         const parent = accordionItem.closest('.accordion');
         if (!parent) {
@@ -848,7 +925,7 @@ const VehicleRoutingModule = (function () {
         const marker = globalState.serviceMarkersMap.get(serviceSubAccordionId);
         marker.remove();
         globalState.serviceMarkersMap.delete(serviceSubAccordionId);
-        
+
         updateServiceAccordionItems();
 
         syncMarkerMap(globalState.SERVICE_TYPE);
@@ -856,7 +933,7 @@ const VehicleRoutingModule = (function () {
 
     function deleteDelivery(deliverySubAccordionId) {
         console.log('VehicleRoutingModule deleteDelivery() called with deliverySubAccordionId', deliverySubAccordionId);
-        
+
         const accordionItem = document.getElementById(deliverySubAccordionId);
         const parent = accordionItem.closest('.accordion');
         if (!parent) {
@@ -878,7 +955,7 @@ const VehicleRoutingModule = (function () {
         const marker = globalState.deliveryMarkersMap.get(deliverySubAccordionId);
         marker.remove();
         globalState.deliveryMarkersMap.delete(deliverySubAccordionId);
-        
+
         updateDeliveryAccordionItems();
 
         syncMarkerMap(globalState.DELIVERY_TYPE);
@@ -886,7 +963,7 @@ const VehicleRoutingModule = (function () {
 
     function deleteShipment(shipmentSubAccordionId) {
         console.log('VehicleRoutingModule deleteShipment() called with shipmentSubAccordionId', shipmentSubAccordionId);
-        
+
         const accordionItem = document.getElementById(shipmentSubAccordionId);
         const parent = accordionItem.closest('.accordion');
         if (!parent) {
@@ -915,7 +992,7 @@ const VehicleRoutingModule = (function () {
         const destinationMarker = globalState.shipmentDestinationMarkersMap.get(shipmentSubAccordionId);
         destinationMarker.remove();
         globalState.shipmentDestinationMarkersMap.delete(shipmentSubAccordionId);
-        
+
         updateShipmentAccordionItems();
 
         syncMarkerMap(globalState.SHIPMENT_SOURCE_TYPE);
@@ -948,12 +1025,12 @@ const VehicleRoutingModule = (function () {
 
     function syncVehicleMarkerMap() {
         console.log('VehicleRoutingModule syncVehicleMarkerMap() called');
-        
+
         let deleteIndex = 0;
         globalState.vehicleMarkersMap.forEach((marker, id) => {
             const vehicleAccordion = document.getElementById(id);
             if (!vehicleAccordion) {
-                return; 
+                return;
             }
 
             deleteIndex++;
@@ -979,12 +1056,12 @@ const VehicleRoutingModule = (function () {
 
     function syncServiceMarkerMap() {
         console.log('VehicleRoutingModule syncServiceMarkerMap() called');
-        
+
         let deleteIndex = 0;
         globalState.serviceMarkersMap.forEach((marker, id) => {
             const serviceAccordion = document.getElementById(id);
             if (!serviceAccordion) {
-                return; 
+                return;
             }
 
             deleteIndex++;
@@ -1010,12 +1087,12 @@ const VehicleRoutingModule = (function () {
 
     function syncDeliveryMarkerMap() {
         console.log('VehicleRoutingModule syncDeliveryMarkerMap() called');
-        
+
         let deleteIndex = 0;
         globalState.deliveryMarkersMap.forEach((marker, id) => {
             const deliveryAccordion = document.getElementById(id);
             if (!deliveryAccordion) {
-                return; 
+                return;
             }
 
             deleteIndex++;
@@ -1041,12 +1118,12 @@ const VehicleRoutingModule = (function () {
 
     function syncShipmentSourceMarkerMap() {
         console.log('VehicleRoutingModule syncShipmentSourceMarkerMap() called');
-        
+
         let deleteIndex = 0;
         globalState.shipmentSourceMarkersMap.forEach((marker, id) => {
             const shipmentAccordion = document.getElementById(id);
             if (!shipmentAccordion) {
-                return; 
+                return;
             }
 
             deleteIndex++;
@@ -1072,12 +1149,12 @@ const VehicleRoutingModule = (function () {
 
     function syncShipmentDestinationMarkerMap() {
         console.log('VehicleRoutingModule syncShipmentDestinationMarkerMap() called');
-        
+
         let deleteIndex = 0;
         globalState.shipmentDestinationMarkersMap.forEach((marker, id) => {
             const shipmentAccordion = document.getElementById(id);
             if (!shipmentAccordion) {
-                return; 
+                return;
             }
 
             deleteIndex++;
@@ -1108,7 +1185,7 @@ const VehicleRoutingModule = (function () {
 
         accordionItems.forEach((accordionItem, index) => {
             const newId = `vehicle-sub-accordion-${index}`;
-            
+
             const accordionButton = accordionItem.querySelector('.accordion-button');
             const accordionCollapse = accordionItem.querySelector('.accordion-collapse');
 
@@ -1124,7 +1201,7 @@ const VehicleRoutingModule = (function () {
 
         accordionItems.forEach((accordionItem, index) => {
             const newId = `service-sub-accordion-${index}`;
-            
+
             const accordionButton = accordionItem.querySelector('.accordion-button');
             const accordionCollapse = accordionItem.querySelector('.accordion-collapse');
 
@@ -1140,7 +1217,7 @@ const VehicleRoutingModule = (function () {
 
         accordionItems.forEach((accordionItem, index) => {
             const newId = `delivery-sub-accordion-${index}`;
-            
+
             const accordionButton = accordionItem.querySelector('.accordion-button');
             const accordionCollapse = accordionItem.querySelector('.accordion-collapse');
 
@@ -1156,7 +1233,7 @@ const VehicleRoutingModule = (function () {
 
         accordionItems.forEach((accordionItem, index) => {
             const newId = `shipment-sub-accordion-${index}`;
-            
+
             const accordionButton = accordionItem.querySelector('.accordion-button');
             const accordionCollapse = accordionItem.querySelector('.accordion-collapse');
 

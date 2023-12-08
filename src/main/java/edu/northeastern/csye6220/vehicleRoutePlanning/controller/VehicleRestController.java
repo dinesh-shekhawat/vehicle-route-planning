@@ -23,7 +23,7 @@ public class VehicleRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VehicleRestController.class);
 
-	private VehicleService vehicleService;
+	private final VehicleService vehicleService;
 	
 	@Autowired
 	public VehicleRestController(VehicleService vehicleService) {
