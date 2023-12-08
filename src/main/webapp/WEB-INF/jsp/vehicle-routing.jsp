@@ -29,7 +29,8 @@
 
             <div class="row p-2">
                 <div class="col-md-5">
-                    <div class="accordion" id="vehicle-accordion-panel">
+                    <div class="accordion" id="accordion-panel">
+                        <!-- Vehicles Accordiong -->
                         <div class="accordion-item">
                             <div class="accordion-header">
                                 <button 
@@ -62,7 +63,73 @@
                                 </div>
                             </div>
                         </div>
-                    </div>                    
+
+                        <!-- Services Accordion -->
+                        <div class="accordion-item mt-3">
+                            <div class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#servicesAccordion" aria-expanded="true" aria-controls="servicesAccordion">
+                                    Services
+                                </button>
+                            </div>
+                            <div id="servicesAccordion" class="accordion-collapse collapse" aria-labelledby="servicesAccordion"
+                                data-bs-parent="#services-accordion-panel">
+                                <div class="accordion-body">
+                                    <div class="btn btn-link" type="button" id="add-service-button">
+                                        Add Service
+                                    </div>
+
+                                    <div id="service-list-accordion">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Deliveries Accordion -->
+                        <div class="accordion-item mt-3">
+                            <div class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#deliveriesAccordion" aria-expanded="true" aria-controls="deliveriesAccordion">
+                                    Deliveries
+                                </button>
+                            </div>
+                            <div id="deliveriesAccordion" class="accordion-collapse collapse" aria-labelledby="deliveriesAccordion"
+                                data-bs-parent="#deliveries-accordion-panel">
+                                <div class="accordion-body">
+                                    <div class="btn btn-link" type="button" id="add-delivery-button">
+                                        Add Delivery
+                                    </div>
+
+                                    <div id="delivery-list-accordion">
+                                        <!-- Add content for the list of deliveries here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipments Accordion -->
+                        <div class="accordion-item mt-3">
+                            <div class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#shipmentsAccordion" aria-expanded="true" aria-controls="shipmentsAccordion">
+                                    Shipments
+                                </button>
+                            </div>
+                            <div id="shipmentsAccordion" class="accordion-collapse collapse" aria-labelledby="shipmentsAccordion"
+                                data-bs-parent="#shipments-accordion-panel">
+                                <div class="accordion-body">
+                                    <div class="btn btn-link" type="button" id="add-shipment-button">
+                                        Add Shipment
+                                    </div>
+
+                                    <div id="shipment-list-accordion">
+                                        <!-- Add content for the list of shipments here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                  
                 </div>
 
                 <div class="col-md-7">
