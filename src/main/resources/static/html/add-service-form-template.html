@@ -1,0 +1,49 @@
+<div class="accordion">
+    <div class="accordion-item my-2">
+        <div class="accordion-header service-accordion-header">
+            <div class="accordion-button" type="button" data-bs-toggle="collapse"
+                data-bs-target="#${serviceSubAccordionId}" aria-expanded="true" aria-controls="serviceSubCollapse">
+
+                <span class="me-5 service-header-text">
+                    ${serviceNamePlaceholder}
+                </span>
+            </div>
+        </div>
+
+        <div id="${serviceSubAccordionId}" class="accordion-collapse collapse service-sub-accordion"
+            aria-labelledby="serviceSubCollapse" data-bs-parent="#serviceSubAccordion">
+
+            <div class="accordion-body">
+                <form>
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text">${serviceNameLabel}</span>
+
+                            <input type="text" class="form-control service-name"
+                                placeholder="${serviceNamePlaceholder}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text">Location</span>
+                            <input type="text" class="form-control service-location" readonly>
+                            <span 
+                                class="input-group-text btn btn-secondary search-location-button"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#searchLocationModal" >
+                                Search
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-danger delete-service-button" type="button">Delete</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
