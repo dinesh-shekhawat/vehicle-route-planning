@@ -29,7 +29,7 @@ body {
     max-width: 300px;
 }
 
-#searchResultsDropdown {
+#searchResultsDropdown, #searchLocationDropdown {
     max-height: 50vh;
     overflow-y: auto;
 }

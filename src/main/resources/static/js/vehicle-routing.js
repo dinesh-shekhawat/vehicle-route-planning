@@ -9,7 +9,8 @@ const VehicleRoutingModule = (function () {
         map: null,
         VEHICLE_TYPE: 'vehicle',
         vehicleMarkersMap: new Map(),
-        currentVehicleLocationSearchId: null,
+        currentVehicleAccordionId: null,
+        currentAccordionType: null,
         locationDecimals: 4,
     };
 
@@ -100,6 +101,10 @@ const VehicleRoutingModule = (function () {
                     .addEventListener('click', handleVehicleSearchButtonClick);
 
                 vehicleListAccordion
+                    .querySelector('.search-location-button')
+                    .addEventListener('click', handleVehicleLocationSearchButtonClick);
+
+                vehicleListAccordion
                     .querySelector('.delete-vehicle-button')
                     .addEventListener('click', handleVehicleDeleteButtonClick);
 
@@ -154,7 +159,18 @@ const VehicleRoutingModule = (function () {
         // Retrieve the vehicleSubAccordionId from the parent accordion item
         const vehicleSubAccordionId = this.closest('.vehicle-sub-accordion').id;
 
-        globalState.currentVehicleLocationSearchId = vehicleSubAccordionId;
+        globalState.currentVehicleAccordionId = vehicleSubAccordionId;
+
+        console.log('vehicleSubAccordionId', vehicleSubAccordionId);
+    }
+
+    function handleVehicleLocationSearchButtonClick() {
+        console.log('Location search button callback clicked');
+        // Retrieve the vehicleSubAccordionId from the parent accordion item
+        const vehicleSubAccordionId = this.closest('.vehicle-sub-accordion').id;
+
+        globalState.currentVehicleAccordionId = vehicleSubAccordionId;
+        globalState.currentAccordionType = globalState.VEHICLE_TYPE;
 
         console.log('vehicleSubAccordionId', vehicleSubAccordionId);
     }
@@ -168,10 +184,11 @@ const VehicleRoutingModule = (function () {
         deleteVehicle(vehicleSubAccordionId);
     }
 
-    function searchVehicleLocation() {
-        console.log('VehicleRoutingModule searchVehicleLocation() called');
+    function searchVehicle() {
+        console.log('VehicleRoutingModule searchVehicle() called');
         
         // Get the query from the input field
+        const vehicleSearchInput = document.getElementById('vehicle-search-input');
         const query = vehicleSearchInput.value;
 
         // Make a fetch request to the server
@@ -184,11 +201,26 @@ const VehicleRoutingModule = (function () {
             .catch(error => console.error('Error searching vehicle location:', error));
     }
 
+    function searchLocation() {
+        console.log('VehicleRoutingModule searchLocation() called');
+
+        // Get the query from the input field
+        const locationSearchInput = document.getElementById('location-search-input');
+        const query = locationSearchInput.value;
+
+        // Make a fetch request to the server
+        fetch(`${globalState.contextPath}/location?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                // Call a function to handle the response data and display dropdown
+                handleLocationSearchResults(data);
+            })
+            .catch(error => console.error('Error searching vehicle location:', error));
+    }
+
     function handleVehicleSearchResults(results) {
-        // Assuming 'results' is an array of objects containing vehicle information
-    
         // Clear existing dropdown content
-        const dropdownContainer = document.getElementById('searchResultsDropdown');
+        const dropdownContainer = document.getElementById('searchVehicleDropdown');
         dropdownContainer.innerHTML = '';
     
         // Create and append dropdown elements for each result
@@ -211,12 +243,38 @@ const VehicleRoutingModule = (function () {
             dropdownContainer.appendChild(dropdownItem);
         });
     }
+
+    function handleLocationSearchResults(results) {
+        // Clear existing dropdown content
+        const dropdownContainer = document.getElementById('searchLocationDropdown');
+        dropdownContainer.innerHTML = '';
+    
+        // Create and append dropdown elements for each result
+        results.forEach(result => {
+            const dropdownItem = document.createElement('div');
+            dropdownItem.classList.add('hoverable');
+            dropdownItem.classList.add('border');
+            dropdownItem.classList.add('border-info');
+            dropdownItem.classList.add('p-2');
+            dropdownItem.classList.add('mb-2');
+
+            dropdownItem.textContent = `${result.name} (${result.latitude},${result.longitude})`;
+    
+            // Attach a click event listener to each dropdown item
+            dropdownItem.addEventListener('click', () => {
+                // Call a function to handle the selected item
+                handleLocationDropdownItemClick(result);
+            });
+    
+            dropdownContainer.appendChild(dropdownItem);
+        });
+    }
     
     function handleVehicleDropdownItemClick(selectedItem) {
         // Log the selected item's information
         console.log('Selected Vehicle:', selectedItem);
 
-        const vehicleSubAccordionId = globalState.currentVehicleLocationSearchId;
+        const vehicleSubAccordionId = globalState.currentVehicleAccordionId;
         const vehicleAccordion = document.getElementById(vehicleSubAccordionId);
         vehicleAccordion.querySelector('.vehicle-name').value = selectedItem.name;
         vehicleAccordion.querySelector('.registration-number').value = selectedItem.registration;
@@ -224,6 +282,32 @@ const VehicleRoutingModule = (function () {
 
         const parent = vehicleAccordion.closest('.accordion-item');
         parent.querySelector('.vehicle-header-text').innerHTML = selectedItem.name;
+
+        syncMarkerPopups();
+    }
+
+    function handleLocationDropdownItemClick(selectedItem) {
+        // Log the selected item's information
+        console.log('Selected Location:', selectedItem);
+
+        switch (globalState.currentAccordionType) {
+            case globalState.VEHICLE_TYPE:
+                handleVehicleLocationDropdownItemClick(selectedItem);
+                break;
+        }
+    }
+
+    function handleVehicleLocationDropdownItemClick(selectedItem) {
+        console.log('handleVehicleLocationDropdownItemClick Location:', selectedItem);
+
+        const vehicleSubAccordionId = globalState.currentVehicleAccordionId;
+        const vehicleAccordion = document.getElementById(vehicleSubAccordionId);
+        vehicleAccordion.querySelector('.vehicle-location').value = `${selectedItem.latitude},${selectedItem.longitude}`;
+
+        globalState
+            .vehicleMarkersMap
+            .get(vehicleSubAccordionId)
+            .setLatLng([selectedItem.latitude, selectedItem.longitude]);
     }
 
     function handleVehicleNameChange() {
@@ -381,6 +465,7 @@ const VehicleRoutingModule = (function () {
     return {
         init: init,
         attachListeners: attachListeners,
-        searchVehicleLocation: searchVehicleLocation
+        searchVehicle: searchVehicle,
+        searchLocation: searchLocation,
     };
 })();

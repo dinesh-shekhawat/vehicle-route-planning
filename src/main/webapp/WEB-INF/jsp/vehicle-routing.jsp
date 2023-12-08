@@ -90,19 +90,44 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Add your form elements for searching vehicle here -->
                         <div class="input-group">
-                            <input type="text" id="vehicleSearchInput" class="form-control vehicle-capacity"
+                            <input type="text" id="vehicle-search-input" class="form-control"
                                 placeholder="Search Vehicle">
                             <span 
                                 class="input-group-text btn btn-secondary"
-                                onclick="vehicleRoutingModule.searchVehicleLocation()">
+                                onclick="vehicleRoutingModule.searchVehicle()">
                                 Search
                             </span>
                         </div>
 
                         <!-- Dropdown container for search results -->
-                        <div id="searchResultsDropdown" class="dropdown p-2"></div>
+                        <div id="searchVehicleDropdown" class="dropdown p-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for searching location -->
+        <div class="modal fade" id="searchLocationModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Search Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group">
+                            <input type="text" id="location-search-input" class="form-control"
+                                placeholder="Search Location">
+                            <span 
+                                class="input-group-text btn btn-secondary"
+                                onclick="vehicleRoutingModule.searchLocation()">
+                                Search
+                            </span>
+                        </div>
+
+                        <!-- Dropdown container for search results -->
+                        <div id="searchLocationDropdown" class="dropdown p-2"></div>
                     </div>
                 </div>
             </div>
