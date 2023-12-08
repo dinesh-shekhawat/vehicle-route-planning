@@ -93,7 +93,6 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		        
 		        Service serviceJob = Service.Builder
 		        		.newInstance(service.getName())
-		        		.addSizeDimension(WEIGHT_INDEX,1)
 		        		.setLocation(Location.newInstance(
 		        				serviceLocation.getLongitude(), 
 		        				serviceLocation.getLatitude()))
