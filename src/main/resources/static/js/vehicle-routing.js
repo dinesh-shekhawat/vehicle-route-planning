@@ -96,19 +96,21 @@ const VehicleRoutingModule = (function () {
                     vehicleListAccordion.appendChild(child.cloneNode(true));
                 });
 
-                vehicleListAccordion
+                const subAccordion = vehicleListAccordion.querySelector(`#${dynamicValues.vehicleSubAccordionId}`);
+
+                subAccordion
                     .querySelector('.search-vehicle-button')
                     .addEventListener('click', handleVehicleSearchButtonClick);
 
-                vehicleListAccordion
+                subAccordion
                     .querySelector('.search-location-button')
                     .addEventListener('click', handleVehicleLocationSearchButtonClick);
 
-                vehicleListAccordion
+                subAccordion
                     .querySelector('.delete-vehicle-button')
                     .addEventListener('click', handleVehicleDeleteButtonClick);
 
-                vehicleListAccordion
+                subAccordion
                     .querySelector('.vehicle-name')
                     .addEventListener('change', handleVehicleNameChange);
 
@@ -155,7 +157,7 @@ const VehicleRoutingModule = (function () {
     }
 
     function handleVehicleSearchButtonClick() {
-        console.log('Delete button callback clicked');
+        console.log('handleVehicleSearchButtonClick callback');
         // Retrieve the vehicleSubAccordionId from the parent accordion item
         const vehicleSubAccordionId = this.closest('.vehicle-sub-accordion').id;
 
