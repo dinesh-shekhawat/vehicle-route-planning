@@ -13,6 +13,7 @@ import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
 import com.graphhopper.jsprit.core.algorithm.box.Jsprit;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
+import com.graphhopper.jsprit.core.problem.cost.VehicleRoutingTransportCosts;
 import com.graphhopper.jsprit.core.problem.job.Delivery;
 import com.graphhopper.jsprit.core.problem.job.Job;
 import com.graphhopper.jsprit.core.problem.job.Service;
@@ -24,6 +25,8 @@ import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
 import com.graphhopper.jsprit.core.reporting.SolutionPrinter;
 import com.graphhopper.jsprit.core.reporting.SolutionPrinter.Print;
+import com.graphhopper.jsprit.core.util.Coordinate;
+import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
@@ -46,6 +49,7 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 	@Override
 	public VehicleRoutingSolutionModel solve(VehicleRoutingProblemModel problemModel) {
         VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
+		vrpBuilder.setFleetSize(VehicleRoutingProblem.FleetSize.FINITE);
 
         final int WEIGHT_INDEX = 0;
 
@@ -172,15 +176,39 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		    }
 		}
 	
-        VehicleRoutingTransportCostsMatrix.Builder matrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-        for (LocationModel location : locations) {
-        	for (LocationModel otherLocation: locations) {
-        		double distance = calculateEuclideanDistance(location, otherLocation);
-                matrixBuilder.addTransportDistance(location.getName(), otherLocation.getName(), distance);
-                matrixBuilder.addTransportTime(location.getName(), otherLocation.getName(), distance);
-        	}
-        }
+        VehicleRoutingTransportCostsMatrix.Builder matrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);
+		LOGGER.trace("building matrix for locations size: {}", locations.size());
+
+//        for (LocationModel location : locations) {
+//        	for (LocationModel otherLocation: locations) {
+//        		double distance = calculateHaversineDistance(location, otherLocation);
+//				LOGGER.trace("distance between {} and {} is {}", location.getName(), otherLocation.getName(), distance);
+//
+//                matrixBuilder.addTransportDistance(location.getName(), otherLocation.getName(), distance);
+//                matrixBuilder.addTransportTime(location.getName(), otherLocation.getName(), distance);
+//        	}
+//        }
+        
+        LOGGER.trace("location map: {}", vrpBuilder.getLocationMap());
+        
+        for (String from : vrpBuilder.getLocationMap().keySet()) {
+            for (String to : vrpBuilder.getLocationMap().keySet()) {
+              Coordinate fromCoord = vrpBuilder.getLocationMap().get(from);
+              Coordinate toCoord = vrpBuilder.getLocationMap().get(to);
+              
+//              double distance = EuclideanDistanceCalculator.calculateDistance(fromCoord, toCoord);
+              double distance = calculateHaversineDistance(fromCoord, toCoord);
+
+              matrixBuilder.addTransportDistance(from, to, distance);
+              matrixBuilder.addTransportTime(from, to, (distance / 2.));
+            }
+          }
 		
+        VehicleRoutingTransportCosts transportCosts = matrixBuilder.build();
+		LOGGER.trace("transportCosts: {}", transportCosts);
+		
+        vrpBuilder.setRoutingCost(transportCosts);
+        
 		VehicleRoutingProblem problem = vrpBuilder.build();
 
 		VehicleRoutingAlgorithm algorithm = Jsprit.createAlgorithm(problem);
@@ -205,10 +233,29 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		return solutionModel;
 	}
 
-	private double calculateEuclideanDistance(LocationModel source, LocationModel destination) {
-		double dx = source.getLongitude() - destination.getLongitude();
-        double dy = source.getLatitude() - destination.getLatitude();
-		return Math.sqrt(dx * dx + dy * dy);
-	}
+	private double calculateHaversineDistance(Coordinate source, Coordinate destination) {
+        // Radius of the Earth in kilometers
+        final double R = 6371.0;
+
+        // Convert latitude and longitude from degrees to radians
+        double lat1 = Math.toRadians(source.getY());
+        double lon1 = Math.toRadians(source.getX());
+        double lat2 = Math.toRadians(destination.getY());
+        double lon2 = Math.toRadians(destination.getX());
+
+        // Differences in coordinates
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        // Haversine formula
+        double a = Math.pow(Math.sin(dLat / 2), 2) +
+                   Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // Distance in kilometers
+        double distance = R * c;
+
+        return distance;
+    }
 
 }
