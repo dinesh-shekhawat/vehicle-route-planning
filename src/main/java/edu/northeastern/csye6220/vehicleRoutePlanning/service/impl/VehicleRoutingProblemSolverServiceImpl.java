@@ -1,6 +1,5 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.service.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +25,10 @@ import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
 import com.graphhopper.jsprit.core.reporting.SolutionPrinter;
 import com.graphhopper.jsprit.core.reporting.SolutionPrinter.Print;
 import com.graphhopper.jsprit.core.util.Coordinate;
-import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.DeliveryModel;
-import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Point;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.ServiceModel;
@@ -53,8 +50,6 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 
         final int WEIGHT_INDEX = 0;
 
-        List<LocationModel> locations = new ArrayList<>();
-        
 		LOGGER.info("Solving the vehicle routing problem for the following constraints");
 		
 		List<VehicleModel> vehicles = problemModel.getVehicles();
@@ -69,20 +64,17 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		        		.addCapacityDimension(WEIGHT_INDEX, vehicle.getCapacity());
 		        VehicleType vehicleType = vehicleTypeBuilder.build();
 		        
+		        Location location = Location.newInstance(
+                		vehicleLocation.getLongitude(),
+                		vehicleLocation.getLatitude());
+		        
 		        VehicleImpl vehicleImpl = VehicleImpl.Builder
 		        		.newInstance(vehicle.getRegistrationNumber())
-	                    .setStartLocation(Location.newInstance(
-	                    		vehicleLocation.getLongitude(),
-	                    		vehicleLocation.getLatitude()))
+	                    .setStartLocation(location)
+//	                    .setEndLocation(location)
 	                    .setType(vehicleType)
+	                    .setReturnToDepot(true)
 	                    .build();
-		        
-		        LocationModel location = new LocationModel(
-		        		vehicle.getRegistrationNumber(),
-		        		vehicleLocation.getLatitude(),
-		        		vehicleLocation.getLongitude());
-		        
-		        locations.add(location);
 		        
 	            vrpBuilder.addVehicle(vehicleImpl);
 		    }
@@ -101,13 +93,6 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		        				serviceLocation.getLongitude(), 
 		        				serviceLocation.getLatitude()))
 		        		.build();
-		        
-		        LocationModel location = new LocationModel(
-		        		service.getName(),
-		        		serviceLocation.getLatitude(),
-		        		serviceLocation.getLongitude());
-		        
-		        locations.add(location);
 		        
 		        vrpBuilder.addJob(serviceJob);
 		    }
@@ -128,13 +113,6 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 								deliveryLocation.getLatitude()))
 						.build();
 				
-				LocationModel location = new LocationModel(
-						deliveryModel.getName(),
-						deliveryLocation.getLatitude(),
-						deliveryLocation.getLongitude());
-
-				locations.add(location);
-
 				vrpBuilder.addJob(deliveryJob);
 			}
 		}
@@ -146,20 +124,6 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		        
 		        Point shipmentSourceLocation = shipment.getSourceLocation();
 		        Point shipmentDestinationLocation = shipment.getDestinationLocation();
-		        
-		        LocationModel sourceLocation = new LocationModel(
-		        		shipment.getName() + " - source",
-		        		shipmentSourceLocation.getLatitude(),
-		        		shipmentSourceLocation.getLongitude());
-		        
-		        locations.add(sourceLocation);
-		        
-		        LocationModel destinationLocation = new LocationModel(
-		        		shipment.getName() + " - destination",
-		        		shipmentDestinationLocation.getLatitude(),
-		        		shipmentDestinationLocation.getLongitude());
-		        
-		        locations.add(destinationLocation);
 		        
 		        Shipment shipmentJob = Shipment.Builder
 		        		.newInstance(shipment.getName())
@@ -176,27 +140,14 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		    }
 		}
 	
-        VehicleRoutingTransportCostsMatrix.Builder matrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);
-		LOGGER.trace("building matrix for locations size: {}", locations.size());
-
-//        for (LocationModel location : locations) {
-//        	for (LocationModel otherLocation: locations) {
-//        		double distance = calculateHaversineDistance(location, otherLocation);
-//				LOGGER.trace("distance between {} and {} is {}", location.getName(), otherLocation.getName(), distance);
-//
-//                matrixBuilder.addTransportDistance(location.getName(), otherLocation.getName(), distance);
-//                matrixBuilder.addTransportTime(location.getName(), otherLocation.getName(), distance);
-//        	}
-//        }
-        
-        LOGGER.trace("location map: {}", vrpBuilder.getLocationMap());
+        VehicleRoutingTransportCostsMatrix.Builder matrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);        
+        LOGGER.trace("location map size: {}", vrpBuilder.getLocationMap().size());
         
         for (String from : vrpBuilder.getLocationMap().keySet()) {
             for (String to : vrpBuilder.getLocationMap().keySet()) {
               Coordinate fromCoord = vrpBuilder.getLocationMap().get(from);
               Coordinate toCoord = vrpBuilder.getLocationMap().get(to);
               
-//              double distance = EuclideanDistanceCalculator.calculateDistance(fromCoord, toCoord);
               double distance = calculateHaversineDistance(fromCoord, toCoord);
 
               matrixBuilder.addTransportDistance(from, to, distance);
