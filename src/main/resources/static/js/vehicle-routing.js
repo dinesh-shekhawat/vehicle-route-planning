@@ -46,10 +46,17 @@ const VehicleRoutingModule = (function () {
         const vehicleAccordion = document.getElementById('vehicle-list-accordion');
         const vehicleAccordionItems = vehicleAccordion.querySelectorAll('.accordion');
         const vehiclesArray = Array.from(vehicleAccordionItems).map(accordionItem => {
+            const locationValue = accordionItem.querySelector('.vehicle-location').value;
+            const [latitude, longitude] = locationValue.split(',');
+
             const vehicleInfo = {
                 name: accordionItem.querySelector('.vehicle-name').value,
                 registrationNumber: accordionItem.querySelector('.registration-number').value,
                 capacity: parseInt(accordionItem.querySelector('.vehicle-capacity').value),
+                location: {
+                    latitude: parseFloat(latitude),
+                    longitude: parseFloat(longitude)
+                },
             };
 
             return vehicleInfo;
