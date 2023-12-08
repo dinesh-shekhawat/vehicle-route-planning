@@ -4,10 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication
-@ComponentScan(basePackages = { 
+@SpringBootApplication(scanBasePackages = { 
 		"edu.northeastern.csye6220.vehicleRoutePlanning.service", 
 		"edu.northeastern.csye6220.vehicleRoutePlanning.controller",
 		"edu.northeastern.csye6220.vehicleRoutePlanning.properties"
