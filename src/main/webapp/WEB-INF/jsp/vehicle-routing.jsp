@@ -29,7 +29,7 @@
 
             <div class="row p-2">
                 <div class="col-md-5">
-                    <div class="accordion" id="accordion-panel">
+                    <div class="accordion" id="vehicle-accordion-panel">
                         <div class="accordion-item">
                             <div class="accordion-header">
                                 <button 
@@ -47,15 +47,11 @@
                                 id="vehicleAccordion" 
                                 class="accordion-collapse collapse" 
                                 aria-labelledby="vehicleAccordion" 
-                                data-bs-parent="#accordion-panel">
+                                data-bs-parent="#vehicle-accordion-panel">
                                 <div class="accordion-body">
                                     <div 
                                         class="btn btn-link" 
-                                        type="button" 
-                                        data-toggle="collapse"
-                                        data-target="#vehicleCollapse" 
-                                        aria-expanded="true" 
-                                        aria-controls="vehicleCollapse"
+                                        type="button"
                                         id="add-vehicle-button">
                                         Add Vehicle
                                     </div>
