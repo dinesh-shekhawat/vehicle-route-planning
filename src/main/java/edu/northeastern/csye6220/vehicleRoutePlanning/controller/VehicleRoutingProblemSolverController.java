@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.VehicleRoutingProblemModel;
@@ -30,7 +29,6 @@ public class VehicleRoutingProblemSolverController {
 	
 	// TODO Should return a solution instead of the problem statement itself
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
 	public VehicleRoutingSolutionModel solve(@RequestBody(required = false) VehicleRoutingProblemModel model) {
 		VehicleRoutingSolutionModel solution = problemSolverService.solve(model);
 		return solution;

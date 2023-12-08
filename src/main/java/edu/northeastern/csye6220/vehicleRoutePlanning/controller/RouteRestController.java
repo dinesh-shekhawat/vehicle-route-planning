@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
@@ -34,14 +33,12 @@ public class RouteRestController {
 	}
 	
 	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
 	public Map<String, ?> getType() {
 		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		return routingService.getInformation();
 	}
 	
 	@PostMapping(value = "/construct", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
 	public Route constructRoute(@RequestBody List<LocationModel> locations) {
 		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		return routingService.getRoute(locations);
