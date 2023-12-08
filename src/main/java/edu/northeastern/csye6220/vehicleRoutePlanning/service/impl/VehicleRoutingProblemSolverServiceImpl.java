@@ -1,12 +1,15 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.DeliveryModel;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.ServiceModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.ShipmentModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.VehicleModel;
@@ -21,6 +24,8 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 	
 	@Override
 	public VehicleRoutingSolutionModel solve(VehicleRoutingProblemModel problemModel) {
+		Map<String, Route> map = new HashMap<>();
+		
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Solving the vehicle routing problem for the following constraints");
 			
@@ -28,6 +33,7 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 			if (vehicles != null) {
 			    for (VehicleModel vehicle : vehicles) {
 			        LOGGER.info("vehicle: {}", vehicle);
+			        map.put(vehicle.getRegistrationNumber(), new Route());
 			    }
 			}
 
@@ -52,10 +58,10 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 			    }
 			}
 		}
-		
-		
-		// TODO Need to return proper data here
-		return new VehicleRoutingSolutionModel();
+
+		VehicleRoutingSolutionModel solutionModel = new VehicleRoutingSolutionModel();
+		solutionModel.setSolution(map);
+		return solutionModel;
 	}
 
 }
