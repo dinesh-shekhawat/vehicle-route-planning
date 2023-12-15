@@ -15,6 +15,9 @@ public class Otp extends AbstractEntity {
 	@Column(name = "field")
 	private String field;
 	
+	@Column(name = "issuing_email_id")
+	private String issuingEmailId;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "accessed_on")
 	private Date accessedOn;
@@ -31,12 +34,18 @@ public class Otp extends AbstractEntity {
 	public void setAccessedOn(Date accessedOn) {
 		this.accessedOn = accessedOn;
 	}
+	public String getIssuingEmailId() {
+		return issuingEmailId;
+	}
+	public void setIssuingEmailId(String issuingEmailId) {
+		this.issuingEmailId = issuingEmailId;
+	}
 	
 	@Override
 	public String toString() {
-		return "Otp [field=" + field + ", accessedOn=" + accessedOn + ", id=" + id + ", createdBy=" + createdBy
-				+ ", updatedBy=" + updatedBy + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + ", deleted="
-				+ deleted + "]";
+		return "Otp [field=" + field + ", issuingEmailId=" + issuingEmailId + ", accessedOn=" + accessedOn + ", id="
+				+ id + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy + ", createdOn=" + createdOn
+				+ ", updatedOn=" + updatedOn + ", deleted=" + deleted + "]";
 	}
 	
 }

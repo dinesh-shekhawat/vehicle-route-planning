@@ -16,7 +16,7 @@
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-0">
         <div class="container">
-            <a href="index.html" class="navbar-brand">DriveSync</a>
+            <span class="navbar-brand">DriveSync</a>
         </div>
     </nav>
     
@@ -75,7 +75,11 @@
                                     <label for="nickname" class="form-label">Nickname</label>
                                     <input type="text" class="form-control" name="nickname" id="nickname" value="${param.nickname}">
                                 </div>
-                                                                
+                                                    
+                                <div class="mb-3 text-center">
+                                    <p>Already have an account? <a href="${pageContext.request.contextPath}/login">Sign in</a></p>
+                                </div>
+
                                 <div class="d-grid col-12">
                                     <input type="submit" value="Register" class="mt-3 btn btn-primary btn-block">
                                 </div>

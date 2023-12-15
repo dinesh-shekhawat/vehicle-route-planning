@@ -36,19 +36,25 @@
                 <div class="col-md-6 mx-auto">
                     <div class="card">
                         <div class="card-header">
-                            <h4>Otp</h4>
+                            <h4>OTP</h4>
                         </div>
                         <div class="card-body">
                             <form action="otp/add" method="POST">
                                 <div class="mb-3">
                                     <label for="first-name" class="form-label">Email</label>
-                                    <input type="text" class="form-control" name="firstName" id="first-name" value="${param.email}" readonly>                                                                        
+                                    <input type="text" class="form-control" name="email" id="first-name" value="${param.email}" readonly>                                                                        
                                     <span class="text-success">Enter OTP sent at your email ID</span>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="otp" class="form-label">OTP</label>
                                     <input type="text" class="form-control" name="otp" id="otp">
+                                    <c:if test="${param.incorrectOtp != null}">                                        
+                                        <span class="text-danger">Incorrect OTP entered</span>
+                                    </c:if>
+                                    <c:if test="${param.otpError != null}">                                        
+                                        <span class="text-danger">Invalid OTP provided</span>
+                                    </c:if>
                                 </div>
                                                                 
                                 <div class="d-grid col-12">

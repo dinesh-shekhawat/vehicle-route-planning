@@ -2,7 +2,9 @@ package edu.northeastern.csye6220.vehicleRoutePlanning.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,53 +21,36 @@ import edu.northeastern.csye6220.vehicleRoutePlanning.service.UserService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.util.EmailValidationUtil;
 
 @Controller
-@RequestMapping("/register")
-public class RegistrationController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationController.class);
+@RequestMapping("/login")
+public class LoginController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
+	
 	private final UserService userService;
-	private final OtpService otpService;
 	private final EmailService emailService;
+	private final OtpService otpService;
 	
-	public RegistrationController(
-			UserService userService,
-			OtpService otpService,
-			EmailService emailService) {
+	@Autowired
+	public LoginController(
+			UserService userService, 
+			EmailService emailService,
+			OtpService otpService) {
 		this.userService = userService;
-		this.otpService = otpService;
 		this.emailService = emailService;
+		this.otpService = otpService;
 	}
 	
-	@GetMapping()
+	@GetMapping
 	public String get() {
-		LOGGER.trace("get called");
-		return "register";
+		LOGGER.trace("accessing get method");
+		return "login";
 	}
-
+	
 	@PostMapping("/add")
-	public ModelAndView add(
-			@RequestParam(name = Constants.FIELD_FIRST_NAME) String firstName,
-			@RequestParam(name = Constants.FIELD_LAST_NAME) String lastName,
-			@RequestParam(name = Constants.FIELD_EMAIL) String email,
-			@RequestParam(name = Constants.FIELD_NICKNAME) String nickname) {
-		LOGGER.trace(
-				"add firstName: {}, lastName: {}, email: {}",
-				firstName, 
-				lastName,
-				email);
+	public ModelAndView add(@RequestParam(name = Constants.FIELD_EMAIL) String email) {
+		LOGGER.trace("add login email: {}", email);
 		ModelAndView modelAndView = new ModelAndView();
 		boolean errorsPresent = false;
-		if (!StringUtils.hasText(firstName)) {
-			errorsPresent = true;
-			modelAndView.addObject("firstNameEror", "true");
-			LOGGER.trace("first name not present");
-		}
-		
-		if (!StringUtils.hasText(lastName)) {
-			errorsPresent = true;
-			LOGGER.trace("last name not present");
-			modelAndView.addObject("lastNameEror", "true");
-		}
 		
 		boolean emailValid = true;
 		if (!StringUtils.hasText(email)) {
@@ -83,34 +68,22 @@ public class RegistrationController {
 		if (emailValid) {
 			LOGGER.trace("will check in db for email: {}", email);
 			User user = userService.findByEmailIdAndNotDeleted(email);
-			if (user != null) {
+			if (user == null) {
 				errorsPresent = true;
-				modelAndView.addObject("duplicateEmail", "true");
+				modelAndView.addObject("noUser", "true");
 			}
 		}
 		
 		if (errorsPresent) {
-			modelAndView.addObject(Constants.FIELD_FIRST_NAME, firstName);
-			modelAndView.addObject(Constants.FIELD_LAST_NAME, lastName);
 			modelAndView.addObject(Constants.FIELD_EMAIL, email);
-			modelAndView.addObject(Constants.FIELD_NICKNAME, nickname);
-			
 			LOGGER.trace("there are errors in the form");
-			modelAndView.setViewName("redirect:/register");
+			modelAndView.setViewName("redirect:/login");
 		} else {
 			LOGGER.debug("Form looks valid will create a new user in the system");
 			
-			User user = new User();
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
-			user.setNickname(nickname);
-			user.setEmail(email);
-			
-			user = userService.add(user);
-			LOGGER.info("system created user: {}", user);
-			
+			User user = userService.findByEmailIdAndNotDeleted(email);
 			Otp otp = otpService.generateNew(user);
-			LOGGER.info("system created otp: {}", otp);
+			LOGGER.info("system created otp: {}, for already logged in user: {}", otp, user);
 			
 			emailService.sendOtpMessage(otp, user);
 			
@@ -120,5 +93,5 @@ public class RegistrationController {
 		
 		return modelAndView;
 	}
-
+	
 }
