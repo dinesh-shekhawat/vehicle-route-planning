@@ -1,0 +1,11 @@
+${AnsiColor.RED} d8888b. d8888b. d888888b db    db d88888b .d8888. db    db d8b   db  .o88b. 
+${AnsiColor.RED} 88  `8D 88  `8D   `88'   88    88 88'     88'  YP `8b  d8' 888o  88 d8P  Y8 
+${AnsiColor.RED} 88   88 88oobY'    88    Y8    8P 88ooooo `8bo.    `8bd8'  88V8o 88 8P      
+${AnsiColor.RED} 88   88 88`8b      88    `8b  d8' 88~~~~~   `Y8b.    88    88 V8o88 8b      
+${AnsiColor.RED} 88  .8D 88 `88.   .88.    `8bd8'  88.     db   8D    88    88  V888 Y8b  d8 
+${AnsiColor.RED} Y8888D' 88   YD Y888888P    YP    Y88888P `8888Y'    YP    VP   V8P  `Y88P' 
+                                                                            
+                                                                            
+${AnsiColor.GREEN} ${application.name} ${application.version}
+${AnsiColor.GREEN} Powered by Spring Boot ${spring-boot.version}
+${AnsiColor.DEFAULT}
