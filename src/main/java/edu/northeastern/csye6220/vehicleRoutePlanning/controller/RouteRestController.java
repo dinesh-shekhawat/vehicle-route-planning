@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.ETA;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.RoutingFactoryService;
@@ -42,6 +44,27 @@ public class RouteRestController {
 	public Route constructRoute(@RequestBody List<LocationModel> locations) {
 		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		return routingService.getRoute(locations);
+	}
+	
+	@GetMapping(value = "/eta", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ETA getEta(
+			@RequestParam double sourceLatitude, 
+			@RequestParam double sourceLongitude,
+			@RequestParam double destinationLatitude,
+			@RequestParam double destinationLongitude) {
+		LOGGER.trace("getting distance between sourceLatitude: {}, sourceLongitude: {}, destinationLatitude: {}, destinationLongitude: {}", 
+				sourceLatitude, 
+				sourceLongitude,
+				destinationLatitude,
+				destinationLongitude);
+		
+		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
+		ETA eta = routingService.getDistance(
+				sourceLatitude, 
+				sourceLongitude, 
+				destinationLatitude, 
+				destinationLongitude);
+		return eta;
 	}
 
 }

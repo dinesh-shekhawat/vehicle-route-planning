@@ -111,7 +111,7 @@ public class AuthenticationFilter implements Filter {
 		userAccess.setUrl(url);
 		userAccess.setClientIpAddress(clientIpAddress);
 		userAccess.setMethodType(method);
-		LOGGER.debug("created user userAccess: {}", userAccess);
+//		LOGGER.debug("created user userAccess: {}", userAccess);
 		return userAccess;
 	}
 

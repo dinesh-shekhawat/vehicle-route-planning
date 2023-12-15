@@ -1,5 +1,6 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
 import com.graphhopper.jsprit.core.algorithm.box.Jsprit;
@@ -14,11 +16,12 @@ import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
 import com.graphhopper.jsprit.core.problem.cost.VehicleRoutingTransportCosts;
 import com.graphhopper.jsprit.core.problem.job.Delivery;
-import com.graphhopper.jsprit.core.problem.job.Job;
 import com.graphhopper.jsprit.core.problem.job.Service;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 import com.graphhopper.jsprit.core.problem.solution.VehicleRoutingProblemSolution;
 import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
+import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
+import com.graphhopper.jsprit.core.problem.vehicle.Vehicle;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
@@ -29,6 +32,8 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import com.graphhopper.jsprit.core.util.VehicleRoutingTransportCostsMatrix;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.DeliveryModel;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.ETA;
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Point;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.ServiceModel;
@@ -36,15 +41,28 @@ import edu.northeastern.csye6220.vehicleRoutePlanning.model.ShipmentModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.VehicleModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.VehicleRoutingProblemModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.VehicleRoutingSolutionModel;
+import edu.northeastern.csye6220.vehicleRoutePlanning.service.RoutingFactoryService;
+import edu.northeastern.csye6220.vehicleRoutePlanning.service.RoutingService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.VehicleRoutingProblemSolverService;
 
 @org.springframework.stereotype.Service
 public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingProblemSolverService {
 
+	private static final String DASH = "-";
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocationServiceImpl.class);
+	
+	private final RoutingFactoryService routingFactoryService;
+	
+	@Autowired
+	public VehicleRoutingProblemSolverServiceImpl(RoutingFactoryService routingFactoryService) {
+		this.routingFactoryService = routingFactoryService;
+	}
 	
 	@Override
 	public VehicleRoutingSolutionModel solve(VehicleRoutingProblemModel problemModel) {
+		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
+		
         VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
 		vrpBuilder.setFleetSize(VehicleRoutingProblem.FleetSize.FINITE);
 
@@ -148,10 +166,14 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
               Coordinate fromCoord = vrpBuilder.getLocationMap().get(from);
               Coordinate toCoord = vrpBuilder.getLocationMap().get(to);
               
-              double distance = calculateHaversineDistance(fromCoord, toCoord);
-
-              matrixBuilder.addTransportDistance(from, to, distance);
-              matrixBuilder.addTransportTime(from, to, (distance / 2.));
+              ETA eta = routingService.getDistance(
+            		  fromCoord.getY(), 
+            		  fromCoord.getX(),
+            		  toCoord.getY(),
+            		  toCoord.getX());
+              
+              matrixBuilder.addTransportDistance(from, to, eta.getDistance());
+              matrixBuilder.addTransportTime(from, to, eta.getTime());
             }
           }
 		
@@ -170,43 +192,54 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		
 		SolutionPrinter.print(problem, bestSolution, Print.VERBOSE);
 		
-		Map<String, Route> solutionMap = new HashMap<>();
-        for (VehicleRoute route : bestSolution.getRoutes()) {
-            Collection<Job> routeJobs = route.getTourActivities().getJobs();
-            Route yourRoute = new Route();
-            // Extract information from routeJobs and populate yourRoute
-            solutionMap.put(route.getVehicle().getId(), yourRoute);
+		Map<String, List<LocationModel>> pointsMap = new HashMap<>();
+		
+        int counter = 1;
+		for (VehicleRoute route : bestSolution.getRoutes()) {
+        	LOGGER.trace("route: {}", counter);
+
+        	Vehicle vehicle = route.getVehicle();
+        	String vehicleId = vehicle.getId();
+        	LOGGER.trace("vehicleId: {}", vehicleId);
+        	List<LocationModel> pointList = pointsMap.getOrDefault(vehicleId, new ArrayList<>());
+        	
+        	List<TourActivity> tourActivities = route.getActivities();
+        	for (TourActivity activity : tourActivities) {
+        		String jobId;
+                if (activity instanceof TourActivity.JobActivity) {
+                    jobId = ((TourActivity.JobActivity) activity).getJob().getId();
+                } else {
+                    jobId = DASH;
+                }
+                
+                Location location = activity.getLocation();
+                LOGGER.trace("jobId: {}, location: {}", jobId, location);
+                
+                LocationModel point = new LocationModel(
+                		location.getName(),
+                		location.getCoordinate().getY(), 
+                		location.getCoordinate().getX());
+                pointList.add(point);
+        	}
+        	
+        	pointsMap.put(vehicleId, pointList);
+        	
+            counter++;
         }
 		
-		// TODO Need to change following
+		Map<String, Route> solution = new HashMap<>();
+		for (Map.Entry<String, List<LocationModel>> entry : pointsMap.entrySet()) {
+			String key = entry.getKey();
+			List<LocationModel> locations = entry.getValue();
+			
+			Route route = routingService.getRoute(locations);
+			
+			solution.put(key, route);
+		}
+		
 		VehicleRoutingSolutionModel solutionModel = new VehicleRoutingSolutionModel();
-		solutionModel.setSolution(new HashMap<>());
+		solutionModel.setSolution(solution);
 		return solutionModel;
 	}
-
-	private double calculateHaversineDistance(Coordinate source, Coordinate destination) {
-        // Radius of the Earth in kilometers
-        final double R = 6371.0;
-
-        // Convert latitude and longitude from degrees to radians
-        double lat1 = Math.toRadians(source.getY());
-        double lon1 = Math.toRadians(source.getX());
-        double lat2 = Math.toRadians(destination.getY());
-        double lon2 = Math.toRadians(destination.getX());
-
-        // Differences in coordinates
-        double dLat = lat2 - lat1;
-        double dLon = lon2 - lon1;
-
-        // Haversine formula
-        double a = Math.pow(Math.sin(dLat / 2), 2) +
-                   Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        // Distance in kilometers
-        double distance = R * c;
-
-        return distance;
-    }
 
 }

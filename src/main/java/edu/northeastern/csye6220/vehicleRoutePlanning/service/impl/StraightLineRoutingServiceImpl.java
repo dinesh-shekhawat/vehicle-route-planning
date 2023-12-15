@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.model.ETA;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.LocationModel;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Point;
 import edu.northeastern.csye6220.vehicleRoutePlanning.model.Route;
@@ -87,6 +88,42 @@ public class StraightLineRoutingServiceImpl implements RoutingService {
 		information.put("type", getType());
 		information.put("routingProperties", routingProperties);
 		return information;
+	}
+
+	@Override
+	public ETA getDistance(
+			double sourceLatitude, 
+			double sourceLongitude,
+			double destinationLatitude,
+			double destinationLongitude) {
+		LOGGER.trace("getting distance between sourceLatitude: {}, sourceLongitude: {}, destinationLatitude: {}, destinationLongitude: {}", 
+				sourceLatitude, 
+				sourceLongitude,
+				destinationLatitude,
+				destinationLongitude);
+		
+		// Haversine distance, Earth radius
+		final double R = 6371.0;
+		
+		double lat1 = Math.toRadians(sourceLatitude);
+        double lon1 = Math.toRadians(sourceLongitude);
+        double lat2 = Math.toRadians(destinationLatitude);
+        double lon2 = Math.toRadians(destinationLongitude);
+
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        double a = Math.pow(Math.sin(dLat / 2), 2) +
+                   Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // Distance in kilometers
+        double distance = R * c;
+        
+        ETA eta = new ETA();
+        eta.setDistance(distance);
+        eta.setTime(distance); // Assuming directly propotional
+        return eta;
 	}
 
 }
