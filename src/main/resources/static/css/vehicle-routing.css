@@ -1,0 +1,39 @@
+/* map.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#accordion-panel {
+    min-height: 90vh;
+    max-height: 90vh;
+    overflow-y: scroll;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#control-center {
+    margin-bottom: 10px;
+}
+
+#map {
+    height: 80vh;
+}
+
+.popup-form {
+    max-width: 300px;
+}
+
+#searchResultsDropdown, #searchLocationDropdown {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.hoverable:hover {
+    cursor: pointer;
+}
