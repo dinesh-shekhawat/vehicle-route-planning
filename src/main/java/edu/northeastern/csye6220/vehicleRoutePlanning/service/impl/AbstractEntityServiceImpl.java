@@ -1,5 +1,7 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.service.impl;
 
+import java.util.List;
+
 import org.hibernate.SessionFactory;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.AbstractEntity;
@@ -42,6 +44,16 @@ public class AbstractEntityServiceImpl<T extends AbstractEntity> implements Abst
 	@Override
 	public SessionFactory getSessionFactory() {
 		return repository.getSessionFactory();
+	}
+
+	@Override
+	public List<T> getAllNotDeleted(String user) {
+		return repository.getAllNotDeleted(user);
+	}
+	
+	@Override
+	public T findByIdAndUserAndNotDeleted(String user, long id) {
+		return repository.findByIdAndUserAndNotDeleted(user, id);
 	}
 
 }

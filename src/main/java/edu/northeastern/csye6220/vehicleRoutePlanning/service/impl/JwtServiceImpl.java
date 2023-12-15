@@ -1,6 +1,5 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.service.impl;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -19,7 +18,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -48,12 +46,6 @@ public class JwtServiceImpl implements JwtService {
 		LOGGER.info("generateToken: {}", token);
 		return token;
 	}
-
-//	private Key getSigningKey() {
-//		byte[] keyBytes = authProperties.getJwtSecretKey().getBytes(StandardCharsets.UTF_8);
-//        return Keys.hmacShaKeyFor(keyBytes);
-//	}
-
 	@Override
 	public String validateToken(String token) {
 		String userEmail = null;

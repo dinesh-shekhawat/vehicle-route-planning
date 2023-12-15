@@ -12,6 +12,9 @@ public class Constants {
 	public static final String ERROR_EMAIL_REQUIRED = "Email is required";
 	public static final String ERROR_EMAIL_FORMAT_INVALID = "Invalid email format";
 	
+	public static final String ERROR_VEHICLE_NOT_FOUND = "Vehicle Not found!";
+	public static final String ERROR_LOCATION_NOT_FOUND = "Location Not found!";
+	
 	public static final String ERROR_DIGITS_SIZE = "Number of digits should be greater than zero";
 	
 	public static final String JWT_TOKEN = "jwtToken";

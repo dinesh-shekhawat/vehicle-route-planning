@@ -2,6 +2,7 @@ package edu.northeastern.csye6220.vehicleRoutePlanning.entities;
 
 import java.util.Date;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.UserContextHolder;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,58 +39,49 @@ public abstract class AbstractEntity {
 
 	@PrePersist
 	protected void onCreate() {
+		createdBy = UserContextHolder.get();
 		createdOn = new Date();
 	}
 
 	@PreUpdate
 	protected void onUpdate() {
+		updatedBy = UserContextHolder.get();
 		updatedOn = new Date();
 	}
 
 	public long getId() {
 		return id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}
-
 	public String getCreatedBy() {
 		return createdBy;
 	}
-
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-
 	public String getUpdatedBy() {
 		return updatedBy;
 	}
-
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-
 	public Date getCreatedOn() {
 		return createdOn;
 	}
-
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
 	}
-
 	public Date getUpdatedOn() {
 		return updatedOn;
 	}
-
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
-
 	public boolean isDeleted() {
 		return deleted;
 	}
-
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}

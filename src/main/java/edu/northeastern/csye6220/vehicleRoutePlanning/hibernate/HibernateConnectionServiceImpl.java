@@ -13,9 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.entities.Location;
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.Otp;
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.User;
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.UserAccess;
+import edu.northeastern.csye6220.vehicleRoutePlanning.entities.Vehicle;
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.HibernateProperties;
 import jakarta.annotation.PostConstruct;
 
@@ -61,7 +63,9 @@ public class HibernateConnectionServiceImpl implements HibernateConnectionServic
         metadataSources.addAnnotatedClasses(
         		UserAccess.class,
         		User.class,
-        		Otp.class
+        		Otp.class,
+        		Vehicle.class,
+        		Location.class
         );
 
         Metadata metadata = metadataSources.buildMetadata();

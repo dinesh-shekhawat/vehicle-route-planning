@@ -652,7 +652,7 @@ const VehicleRoutingModule = (function () {
         const vehicleSearchInput = document.getElementById('vehicle-search-input');
         const query = vehicleSearchInput.value;
 
-        fetch(`${globalState.contextPath}/vehicle?query=${query}`)
+        fetch(`${globalState.contextPath}/vehicle-rest`)
             .then(response => response.json())
             .then(data => {
                 handleVehicleSearchResults(data);
@@ -666,7 +666,7 @@ const VehicleRoutingModule = (function () {
         const locationSearchInput = document.getElementById('location-search-input');
         const query = locationSearchInput.value;
 
-        fetch(`${globalState.contextPath}/location?query=${query}`)
+        fetch(`${globalState.contextPath}/location-rest`)
             .then(response => response.json())
             .then(data => {
                 handleLocationSearchResults(data);
@@ -686,7 +686,7 @@ const VehicleRoutingModule = (function () {
             dropdownItem.classList.add('p-2');
             dropdownItem.classList.add('mb-2');
 
-            dropdownItem.textContent = `${result.name} - ${result.registration} - Capacity: ${result.capacity}`;
+            dropdownItem.textContent = `${result.name} - ${result.registrationNumber} - Capacity: ${result.capacity}`;
 
             dropdownItem.addEventListener('click', () => {
                 handleVehicleDropdownItemClick(result);

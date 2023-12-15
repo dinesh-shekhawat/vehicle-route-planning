@@ -1,11 +1,18 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.model;
 
 public class VehicleModel {
+	private long id;
 	private String name;
 	private String registrationNumber;
 	private int capacity;
 	private Point location;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}
@@ -30,11 +37,11 @@ public class VehicleModel {
 	public void setLocation(Point location) {
 		this.location = location;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "VehicleModel [name=" + name + ", registrationNumber=" + registrationNumber + ", capacity=" + capacity
-				+ ", location=" + location + "]";
+		return "VehicleModel [id=" + id + ", name=" + name + ", registrationNumber=" + registrationNumber
+				+ ", capacity=" + capacity + ", location=" + location + "]";
 	}
 
 }

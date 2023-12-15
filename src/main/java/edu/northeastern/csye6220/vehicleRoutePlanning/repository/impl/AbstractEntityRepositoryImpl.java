@@ -1,5 +1,7 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.repository.impl;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -81,7 +83,7 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 			LOGGER.error("Exception in findByIdAndNotDeleted: {}", e.getMessage(), e);
 			throw e;
 		}
-		
+
 		return t;
 	}
 
@@ -132,5 +134,46 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 		return sessionFactory;
 	}
 
+	@Override
+	public List<T> getAllNotDeleted(String user) {
+		LOGGER.trace("get all entities not deleted");
+
+		List<T> entities = null;
+		
+		try (Session session = sessionFactory.openSession()) {
+			String hql = "FROM " + clazz.getSimpleName() + " WHERE createdBy = :createdBy AND deleted = false ORDER by createdOn";
+			Query<T> query = session.createQuery(hql, clazz);
+			query.setParameter("createdBy", user);
+			entities = query.list();
+		} catch (Exception e) {
+			LOGGER.error("Exception in getAllNotDeleted: {}", e.getMessage(), e);
+			throw e;
+		}
+
+		return entities;
+	}
+
+	@Override
+	public T findByIdAndUserAndNotDeleted(String user, long id) {
+		LOGGER.trace("find entity by id, user, and not deleted: {}", id);
+
+	    T t = null;
+
+	    try (Session session = sessionFactory.openSession()) {
+	        // Assuming you have a User property in your entity and it's named "user"
+	        String hql = "FROM " + clazz.getSimpleName() + " WHERE id = :id AND createdBy = :user AND deleted = false";
+	        
+	        Query<T> query = session.createQuery(hql, clazz);
+	        query.setParameter("id", id);
+	        query.setParameter("user", user);
+
+	        t = query.uniqueResult();
+	    } catch (Exception e) {
+	        LOGGER.error("Exception in findByIdAndUserAndNotDeleted: {}", e.getMessage(), e);
+	        throw e;
+	    }
+
+	    return t;
+	}
 
 }

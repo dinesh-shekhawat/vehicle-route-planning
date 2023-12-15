@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.UserContextHolder;
 import edu.northeastern.csye6220.vehicleRoutePlanning.constants.Constants;
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.UserAccess;
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.URLProperties;
@@ -71,12 +72,13 @@ public class AuthenticationFilter implements Filter {
 			if (nonProtectedUrl) {
 				filterChain.doFilter(servletRequest, servletResponse);
 			} else {
-				// TODO add jwt authentication
-				
 				String userInfo = getUserInfo(httpRequest);
 				LOGGER.trace("userInfo: {}", userInfo);
+				
 				if (userInfo != null) {
-					filterChain.doFilter(servletRequest, servletResponse);	
+					UserContextHolder.set(userInfo);
+					filterChain.doFilter(servletRequest, servletResponse);
+					UserContextHolder.clear();
 				} else {
 					LOGGER.error("token expected but not found");
 					httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");

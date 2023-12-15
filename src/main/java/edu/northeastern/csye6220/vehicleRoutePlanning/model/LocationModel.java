@@ -1,6 +1,7 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.model;
 
 public class LocationModel {
+	private long id;
     private String name;
     private double latitude;
     private double longitude;
@@ -15,6 +16,13 @@ public class LocationModel {
 		this.longitude = longitude;
 	}
     
+    
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}

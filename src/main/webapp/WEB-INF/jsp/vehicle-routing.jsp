@@ -19,6 +19,23 @@
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-0">
             <div class="container-fluid p-4">
                 <span class="navbar-brand">DriveSync</span>
+
+                <!-- Vehicle Button -->
+                <a href="${pageContext.request.contextPath}/vehicle">
+                    <button type="button" class="btn btn-info me-2">Vehicle</button>
+                </a>
+
+                <!-- Location Button -->
+                <a href="${pageContext.request.contextPath}/location">
+                    <button type="button" class="btn btn-primary me-2">Location</button>
+                </a>
+
+                <!-- Vehicle Route Planning Button -->
+                <a>
+                    <button type="button" class="btn btn-success">Routing</button>
+                </a>
+
+                <!-- Logout Button  -->
                 <a href="${pageContext.request.contextPath}/logout">
                     <span class="btn btn-danger navbar-brand float-end">Logout</span>
                 </a>
