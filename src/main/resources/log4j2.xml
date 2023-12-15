@@ -18,7 +18,7 @@
 				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
 			</Policies>
 			<DefaultRolloverStrategy max="200000" />
-			<Layout type="PatternLayout" pattern="%d [%thread] [%level] [%C{1}.%M()-%L] %message%n" />
+			<Layout type="PatternLayout" pattern="%d [%thread] [%level] [%X{user}] [%X{method}] [%X{short-url}] [%C{1}.%M()-%L] %message%n" />
 		</Appender>
 
 		<Appender type="Console" name="Console" target="SYSTEM_OUT">

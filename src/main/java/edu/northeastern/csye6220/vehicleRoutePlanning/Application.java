@@ -6,10 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = { 
+		"edu.northeastern.csye6220.vehicleRoutePlanning", 
 		"edu.northeastern.csye6220.vehicleRoutePlanning.service", 
 		"edu.northeastern.csye6220.vehicleRoutePlanning.controller",
 		"edu.northeastern.csye6220.vehicleRoutePlanning.properties",
-		"edu.northeastern.csye6220.vehicleRoutePlanning.filter"
+		"edu.northeastern.csye6220.vehicleRoutePlanning.filter",
+		"edu.northeastern.csye6220.vehicleRoutePlanning.repository",
+		"edu.northeastern.csye6220.vehicleRoutePlanning.hibernate"
 })
 public class Application {
 
