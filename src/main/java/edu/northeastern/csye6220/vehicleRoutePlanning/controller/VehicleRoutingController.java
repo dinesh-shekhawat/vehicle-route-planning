@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.MapProperties;
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/vehicle-routing")

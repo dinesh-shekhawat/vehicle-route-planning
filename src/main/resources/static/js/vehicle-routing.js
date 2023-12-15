@@ -155,7 +155,11 @@ const VehicleRoutingModule = (function () {
         const solution = data.solution;
         for (const [vehicleName, data] of Object.entries(solution)) {
             addVehicleContent(vehicleName, data.polyline);
-            globalState.routeData.set(vehicleName, data);
+            if (data.polyline) {
+                globalState.routeData.set(vehicleName, data);
+            } else {
+                globalState.routeData.set(vehicleName, []);
+            }
         }
     }
 
@@ -183,12 +187,13 @@ const VehicleRoutingModule = (function () {
 
     function clearVehicleContent() {
         const routeListDiv = document.getElementById('route-list');
-    
-        const vehicleButtons = routeListDiv.getElementsByClassName('btn');
-        for (const vehicleButton of vehicleButtons) {
-            // vehicleButton.removeEventListener('click', globalState.vehicleButtonListeners[vehicleButton.id]);
-            routeListDiv.removeChild(vehicleButton.parentNode);
-        }
+        routeListDiv.innerHTML = '';
+        // const vehicleButtons = routeListDiv.getElementsByClassName('btn');
+        // for (const vehicleButton of vehicleButtons) {
+        //     // vehicleButton.removeEventListener('click', globalState.vehicleButtonListeners[vehicleButton.id]);
+        //     console.log('VehicleRoutingModule clearVehicleContent() removing', vehicleButton);
+        //     routeListDiv.removeChild(vehicleButton.parentNode);
+        // }
     }
 
     function showPolylineForVehicle(vehicleName) {
