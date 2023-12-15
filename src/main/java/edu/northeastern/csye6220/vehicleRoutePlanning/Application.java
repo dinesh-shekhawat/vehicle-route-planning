@@ -8,7 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = { 
 		"edu.northeastern.csye6220.vehicleRoutePlanning.service", 
 		"edu.northeastern.csye6220.vehicleRoutePlanning.controller",
-		"edu.northeastern.csye6220.vehicleRoutePlanning.properties"
+		"edu.northeastern.csye6220.vehicleRoutePlanning.properties",
+		"edu.northeastern.csye6220.vehicleRoutePlanning.filter"
 })
 public class Application {
 
