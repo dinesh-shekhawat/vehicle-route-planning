@@ -77,7 +77,7 @@ public class AuthenticationFilter implements Filter {
 	}
 
 	private String buildRequestURL(HttpServletRequest request) {
-		return request.getRequestURL().toString();
+		return request.getRequestURI();
 	}
 	
 	private String getRequestMethod(HttpServletRequest request) {
