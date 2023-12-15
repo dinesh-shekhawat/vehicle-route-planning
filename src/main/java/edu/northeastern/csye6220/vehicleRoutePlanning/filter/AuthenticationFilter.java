@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import edu.northeastern.csye6220.vehicleRoutePlanning.constants.Constants;
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.UserAccess;
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.URLProperties;
+import edu.northeastern.csye6220.vehicleRoutePlanning.service.JwtService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.UserAccessService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -19,6 +21,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Component
 @Order(1)
@@ -31,11 +34,19 @@ public class AuthenticationFilter implements Filter {
 
 	private final URLProperties urlProperties;
 	private final UserAccessService userAccessService;
-
+	private final JwtService jwtService;
+	private final HttpSession httpSession;
+	
 	@Autowired
-	public AuthenticationFilter(URLProperties urlProperties, UserAccessService userAccessService) {
+	public AuthenticationFilter(
+			URLProperties urlProperties, 
+			UserAccessService userAccessService,
+			JwtService jwtService,
+			HttpSession httpSession) {
 		this.urlProperties = urlProperties;
 		this.userAccessService = userAccessService;
+		this.jwtService = jwtService;
+		this.httpSession = httpSession;
 		LOGGER.info("urlProperties: {}", urlProperties);
 	}
 
@@ -62,7 +73,15 @@ public class AuthenticationFilter implements Filter {
 			} else {
 				// TODO add jwt authentication
 				
-				filterChain.doFilter(servletRequest, servletResponse);
+				String userInfo = getUserInfo(httpRequest);
+				LOGGER.trace("userInfo: {}", userInfo);
+				if (userInfo != null) {
+					filterChain.doFilter(servletRequest, servletResponse);	
+				} else {
+					LOGGER.error("token expected but not found");
+					httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
+					return;
+				}
 			}
 			
 			long endTime = System.currentTimeMillis();
@@ -78,6 +97,33 @@ public class AuthenticationFilter implements Filter {
 		}
 	}
 	
+	private String getUserInfo(HttpServletRequest httpRequest) {
+		String result = null;
+		try {
+			String token = extractTokenFromRequest(httpRequest);
+			if (token == null) {
+				LOGGER.trace("token not found in request");
+				return null;
+			}
+			
+			result = jwtService.validateToken(token);
+		} catch (Exception e) {
+			LOGGER.error("exception in isAuthenticated(): {}", e.getMessage(), e);
+		}
+		
+		return result;
+	}
+
+	private String extractTokenFromRequest(HttpServletRequest httpRequest) {
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object instanceof String) {
+			String token = (String) object;
+			return token;	
+		} else {
+			return null;
+		}
+	}
+
 	private boolean isStaticAssetUrl(HttpServletRequest httpRequest) {
 		String url = buildRequestURL(httpRequest);
 		List<String> staticResourceExtensions = urlProperties.getNonProtectedExtensions();

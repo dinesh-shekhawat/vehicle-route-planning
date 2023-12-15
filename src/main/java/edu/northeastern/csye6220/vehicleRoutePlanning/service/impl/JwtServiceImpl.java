@@ -2,6 +2,7 @@ package edu.northeastern.csye6220.vehicleRoutePlanning.service.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -33,20 +34,25 @@ public class JwtServiceImpl implements JwtService {
 	
 	@Override
 	public String generateToken(User user) {
-		String token = Jwts.builder()
+		Key hmacKey = new SecretKeySpec(
+				Base64.getDecoder().decode(authProperties.getJwtSecretKey()), 
+                SignatureAlgorithm.HS256.getJcaName());
+		
+		String token = Jwts
+				.builder()
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date()) 
                 .setExpiration(new Date(System.currentTimeMillis() + authProperties.getJwtExpirationMilliseconds()))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512) // <-- This can be helpful to you
+                .signWith(hmacKey)
                 .compact();
 		LOGGER.info("generateToken: {}", token);
 		return token;
 	}
 
-	private Key getSigningKey() {
-		byte[] keyBytes = authProperties.getJwtSecretKey().getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
-	}
+//	private Key getSigningKey() {
+//		byte[] keyBytes = authProperties.getJwtSecretKey().getBytes(StandardCharsets.UTF_8);
+//        return Keys.hmacShaKeyFor(keyBytes);
+//	}
 
 	@Override
 	public String validateToken(String token) {
@@ -54,9 +60,13 @@ public class JwtServiceImpl implements JwtService {
 		
 		// It throws exception if token is invalid
 		try {
+			Key hmacKey = new SecretKeySpec(
+					Base64.getDecoder().decode(authProperties.getJwtSecretKey()), 
+	                SignatureAlgorithm.HS256.getJcaName());
+			
 			Jws<Claims> claims = Jwts
 				.parserBuilder()
-				.setSigningKey(authProperties.getJwtSecretKey())
+				.setSigningKey(hmacKey)
 				.build()
 				.parseClaimsJws(token);
 			
