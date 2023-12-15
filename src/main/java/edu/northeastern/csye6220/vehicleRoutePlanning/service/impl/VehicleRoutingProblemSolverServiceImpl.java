@@ -203,7 +203,18 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
         	LOGGER.trace("vehicleId: {}", vehicleId);
         	List<LocationModel> pointList = pointsMap.getOrDefault(vehicleId, new ArrayList<>());
         	
-        	List<TourActivity> tourActivities = route.getActivities();
+        	TourActivity start = route.getStart();
+        	Location startLocation = start.getLocation();
+            LOGGER.trace("start location: {}", startLocation);
+
+            LocationModel startPoint = new LocationModel(
+            		startLocation.getName(),
+            		startLocation.getCoordinate().getY(), 
+            		startLocation.getCoordinate().getX());
+            
+            pointList.add(startPoint);
+            
+            List<TourActivity> tourActivities = route.getActivities();
         	for (TourActivity activity : tourActivities) {
         		String jobId;
                 if (activity instanceof TourActivity.JobActivity) {
@@ -221,6 +232,17 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
                 		location.getCoordinate().getX());
                 pointList.add(point);
         	}
+        	
+        	TourActivity end = route.getEnd();
+        	Location endLocation = end.getLocation();
+        	LOGGER.trace("end location: {}", startLocation);
+        	
+        	LocationModel lastPoint = new LocationModel(
+        			endLocation.getName(),
+        			endLocation.getCoordinate().getY(), 
+        			endLocation.getCoordinate().getX());
+            
+            pointList.add(lastPoint);
         	
         	pointsMap.put(vehicleId, pointList);
         	

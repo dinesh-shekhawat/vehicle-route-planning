@@ -21,6 +21,7 @@ const VehicleRoutingModule = (function () {
         currentShipmentAccordionId: null,
         currentLocationType: null,
         locationDecimals: 4,
+        routeData: new Map(),
     };
 
     function init(contextPath, latitude, longitude, zoomLevel) {
@@ -129,6 +130,10 @@ const VehicleRoutingModule = (function () {
 
         console.log('vehicleRoutingInfo', vehicleRoutingInfo);
 
+        globalState.routeData.clear();
+        clearVehicleContent();
+        clearPolyline();
+
         fetch(
             `${globalState.contextPath}/vehicle-routing-problem-solver`, {
             method: 'POST',
@@ -138,10 +143,72 @@ const VehicleRoutingModule = (function () {
             .then(response => response.json())
             .then(data => {
                 console.log('Response from server:', data);
+                parseRoutingResponse(data)
             })
             .catch(error => {
                 console.error('Error:', error);
+                aleat('Error occurred while solving vehicle routing problem');
             });
+    }
+
+    function parseRoutingResponse(data) {
+        const solution = data.solution;
+        for (const [vehicleName, data] of Object.entries(solution)) {
+            addVehicleContent(vehicleName, data.polyline);
+            globalState.routeData.set(vehicleName, data);
+        }
+    }
+
+    function addVehicleContent(vehicleName, polyline) {
+        console.log('VehicleRoutingModule addVehicleContent() called vehicleName', vehicleName, 'polyline', polyline);
+
+        const routeListDiv = document.getElementById('route-list');
+
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.classList.add('mb-3');
+
+        const vehicleButton = document.createElement('button');
+        vehicleButton.textContent = vehicleName;
+        vehicleButton.classList.add('btn', 'btn-block', 'btn-primary');
+        vehicleButton.id = `vehicle-route-button-${vehicleName}`;
+        vehicleButton.addEventListener('click', () => {
+            console.log(`Button for ${vehicleName} clicked!`);
+            showPolylineForVehicle(vehicleName);
+        });
+
+        buttonWrapper.appendChild(vehicleButton);
+
+        routeListDiv.appendChild(buttonWrapper);
+    }
+
+    function clearVehicleContent() {
+        const routeListDiv = document.getElementById('route-list');
+    
+        const vehicleButtons = routeListDiv.getElementsByClassName('btn');
+        for (const vehicleButton of vehicleButtons) {
+            // vehicleButton.removeEventListener('click', globalState.vehicleButtonListeners[vehicleButton.id]);
+            routeListDiv.removeChild(vehicleButton.parentNode);
+        }
+    }
+
+    function showPolylineForVehicle(vehicleName) {
+        console.log('VehicleRoutingModule showPolylineForVehicle() called vehicleName', vehicleName);
+
+        const routeData = globalState.routeData.get(vehicleName);
+        const polyline = routeData.polyline;
+
+        clearPolyline();
+
+        const latLngs = polyline.map(point => L.latLng(point.latitude, point.longitude));
+        const newPolyline = L.polyline(latLngs, { color: 'red' }).addTo(globalState.map);
+        globalState.currentPolyline = newPolyline;
+    }
+
+    function clearPolyline() {
+        if (globalState.currentPolyline) {
+            globalState.map.removeLayer(globalState.currentPolyline);
+            globalState.currentPolyline = null;
+        }
     }
 
     function addVehicle() {

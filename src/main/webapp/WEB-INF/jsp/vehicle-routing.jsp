@@ -138,6 +138,24 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Routes Accordion -->
+                        <div class="accordion-item mt-3">
+                            <div class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#routesAccordion" aria-expanded="true" aria-controls="routesAccordion">
+                                    Routes
+                                </button>
+                            </div>
+                            <div id="routesAccordion" class="accordion-collapse collapse" aria-labelledby="routesAccordion"
+                                data-bs-parent="#routes-accordion-panel">
+                                <div class="accordion-body">
+                                    <div id="route-list">
+                                        <!-- Add content for the list of routes here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>                  
                 </div>
 
