@@ -20,15 +20,17 @@ public class VehicleRoutingController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VehicleRoutingController.class);
 
 	private final MapProperties mapProperties;
-
+	private HttpSession httpSession;
+	
 	@Autowired
-	public VehicleRoutingController(MapProperties mapProperties) {
+	public VehicleRoutingController(MapProperties mapProperties, HttpSession httpSession) {
 		this.mapProperties = mapProperties;
+		this.httpSession = httpSession;
 		LOGGER.info("loaded mapProperties: {}", mapProperties);
 	}
 
 	@GetMapping
-	public ModelAndView showMap(Model model, HttpSession httpSession) {
+	public ModelAndView showMap(Model model) {
 		LOGGER.trace("will show the map on vehicle routing page");
 
 		Object tokenObject = httpSession.getAttribute(Constants.JWT_TOKEN);

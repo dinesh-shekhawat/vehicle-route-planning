@@ -20,6 +20,7 @@ import edu.northeastern.csye6220.vehicleRoutePlanning.service.JwtService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.OtpService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.UserService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.util.EmailValidationUtil;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/otp")
@@ -30,11 +31,18 @@ public class OtpController {
 	private final UserService userService;
 	private final JwtService jwtService;
 	
+	private final HttpSession httpSession;
+	
 	@Autowired
-	public OtpController(OtpService otpService, UserService userService, JwtService jwtService) {
+	public OtpController(
+			OtpService otpService, 
+			UserService userService, 
+			JwtService jwtService,
+			HttpSession httpSession) {
 		this.otpService = otpService;
 		this.userService = userService;
 		this.jwtService = jwtService;
+		this.httpSession = httpSession;
 	}
 	
 	@GetMapping()
@@ -91,8 +99,7 @@ public class OtpController {
 					LOGGER.info("databaseOtp updated: {}", databaseOtp);
 					
 					String token = jwtService.generateToken(user);
-					
-					// TODO How to send back to session of client?/
+					httpSession.setAttribute(Constants.JWT_TOKEN, token);
 				}
 			}
 		}

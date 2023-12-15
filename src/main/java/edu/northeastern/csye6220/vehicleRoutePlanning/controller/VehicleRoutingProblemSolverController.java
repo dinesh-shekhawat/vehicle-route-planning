@@ -27,7 +27,6 @@ public class VehicleRoutingProblemSolverController {
 		LOGGER.info("loaded problemSolverService: {}", problemSolverService);
 	}
 	
-	// TODO Should return a solution instead of the problem statement itself
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public VehicleRoutingSolutionModel solve(@RequestBody(required = false) VehicleRoutingProblemModel model) {
 		VehicleRoutingSolutionModel solution = problemSolverService.solve(model);

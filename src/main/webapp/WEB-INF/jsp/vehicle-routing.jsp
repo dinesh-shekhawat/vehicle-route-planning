@@ -16,11 +16,20 @@
         <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/Polyline.encoded.js"></script>
 
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-0">
+            <div class="container-fluid p-4">
+                <span class="navbar-brand">DriveSync</span>
+                <a href="${pageContext.request.contextPath}/logout">
+                    <span class="btn btn-danger navbar-brand float-end">Logout</span>
+                </a>
+            </div>
+        </nav>
+
         <div class="container-fluid">
             <div class="row" id="control-center">
-                <div class="col-12 p-2">
+                <div class="col-12 p-2 pe-4">
                     <button 
-                        class="d-inline-block btn btn-primary" 
+                        class="d-inline-block btn btn-primary float-end" 
                         id="solve">
                         Solve
                     </button>

@@ -12,9 +12,8 @@
 <body>
     <div class="d-flex align-items-center justify-content-center vh-100">
         <div class="text-center">
-            <div class="display-1 text-danger">404</div>
-            <h2 class="mb-4">Oops! Something went wrong.</h2>
-            <p class="lead mb-4">We're sorry for the inconvenience!</p>
+            <h2 class="mb-4">You have been logged out</h2>
+            <p class="lead mb-4">Thanks for using the application!</p>
             <div class="btn-group" role="group">
 
                 <a href="${pageContext.request.contextPath}/" class="btn btn-secondary">Go Back</a>
