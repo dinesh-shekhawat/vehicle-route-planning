@@ -9,18 +9,26 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("url")
 public class URLProperties {
 
-	private List<String> protectedUrls;
+	private List<String> nonProtectedUrls;
+	private List<String> nonProtectedExtensions;
 
-	public List<String> getProtectedUrls() {
-		return protectedUrls;
+	public List<String> getNonProtectedUrls() {
+		return nonProtectedUrls;
 	}
-	public void setProtectedUrls(List<String> protectedUrls) {
-		this.protectedUrls = protectedUrls;
+	public void setNonProtectedUrls(List<String> nonProtectedUrls) {
+		this.nonProtectedUrls = nonProtectedUrls;
+	}
+	public List<String> getNonProtectedExtensions() {
+		return nonProtectedExtensions;
+	}
+	public void setNonProtectedExtensions(List<String> nonProtectedExtensions) {
+		this.nonProtectedExtensions = nonProtectedExtensions;
 	}
 	
 	@Override
 	public String toString() {
-		return "URLProperties [protectedUrls=" + protectedUrls + "]";
+		return "URLProperties [nonProtectedUrls=" + nonProtectedUrls + ", nonProtectedExtensions="
+				+ nonProtectedExtensions + "]";
 	}
 	
 }

@@ -50,6 +50,8 @@ buildNumber.properties
 
 # Package Files #
 *.jar
+!green-mail-server/greenmail-standalone-2.1.0-alpha-3.jar
+
 *.war
 *.nar
 *.ear

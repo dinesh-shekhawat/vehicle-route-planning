@@ -1,7 +1,5 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.model;
 
-import java.util.Objects;
-
 public class Point {
 	private double latitude;
     private double longitude;

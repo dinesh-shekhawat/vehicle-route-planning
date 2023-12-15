@@ -1,6 +1,7 @@
 package edu.northeastern.csye6220.vehicleRoutePlanning.filter;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,26 +42,64 @@ public class AuthenticationFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
 			throws IOException, ServletException {
-		LOGGER.trace("performing filter");
-
+		// Too verbose to print for static assets being accessed
+//		LOGGER.trace("performing filter");
+		
 		HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 		HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-		UserAccess access = createUserAccess(httpRequest);
-		userAccessService.add(access);
-
-		long startTime = System.currentTimeMillis();
-		filterChain.doFilter(servletRequest, servletResponse);
-		long endTime = System.currentTimeMillis();
-		long timeTaken = endTime - startTime;
+		boolean staticAssetUrl = isStaticAssetUrl(httpRequest);
+		if (staticAssetUrl) {
+			filterChain.doFilter(servletRequest, servletResponse);
+		} else {
+			UserAccess access = createUserAccess(httpRequest);
+			userAccessService.add(access);
+			long startTime = System.currentTimeMillis();
+			
+			boolean nonProtectedUrl = isNonProtectedRoute(httpRequest);
+			if (nonProtectedUrl) {
+				filterChain.doFilter(servletRequest, servletResponse);
+			} else {
+				// TODO add jwt authentication
+				
+				filterChain.doFilter(servletRequest, servletResponse);
+			}
+			
+			long endTime = System.currentTimeMillis();
+			long timeTaken = endTime - startTime;
+			
+			int responseCode = getResponseCode(httpResponse);
+			access.setResponseCode(responseCode);
+			access.setResponseTime(timeTaken);
+			
+			userAccessService.update(access);
+			
+			LOGGER.info("millseconds taken to complete the request: {}", timeTaken);
+		}
+	}
+	
+	private boolean isStaticAssetUrl(HttpServletRequest httpRequest) {
+		String url = buildRequestURL(httpRequest);
+		List<String> staticResourceExtensions = urlProperties.getNonProtectedExtensions();
+		for (String extension : staticResourceExtensions) {
+			if (url.endsWith(extension)) {
+				return true;
+			}
+		}
 		
-		int responseCode = getResponseCode(httpResponse);
-		access.setResponseCode(responseCode);
-		access.setResponseTime(timeTaken);
+		return false;
+	}
+	
+	private boolean isNonProtectedRoute(HttpServletRequest httpRequest) {
+		String url = buildRequestURL(httpRequest);
+		List<String> allowedUrls = urlProperties.getNonProtectedUrls();
+		for (String allowedUrl : allowedUrls) {
+			if (url.contains(allowedUrl)) {
+				return true;
+			}
+		}
 		
-		userAccessService.update(access);
-		
-		LOGGER.info("millseconds taken to complete the request: {}", timeTaken);
+		return false;
 	}
 
 	private UserAccess createUserAccess(HttpServletRequest httpRequest) {

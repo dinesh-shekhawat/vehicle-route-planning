@@ -15,7 +15,7 @@ public class HomeController {
 	@GetMapping
 	public String home() {
 		LOGGER.trace("accessing home method");
-		return "redirect:registration";
+		return "redirect:register";
 	}
 	
 }
