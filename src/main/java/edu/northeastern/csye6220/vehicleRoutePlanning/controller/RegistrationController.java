@@ -17,6 +17,7 @@ import edu.northeastern.csye6220.vehicleRoutePlanning.service.EmailService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.OtpService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.UserService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.util.EmailValidationUtil;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/register")
@@ -27,18 +28,29 @@ public class RegistrationController {
 	private final OtpService otpService;
 	private final EmailService emailService;
 	
+	private final HttpSession httpSession;
+	
 	public RegistrationController(
 			UserService userService,
 			OtpService otpService,
-			EmailService emailService) {
+			EmailService emailService,
+			HttpSession httpSession) {
 		this.userService = userService;
 		this.otpService = otpService;
 		this.emailService = emailService;
+		this.httpSession = httpSession;
 	}
 	
 	@GetMapping()
 	public String get() {
 		LOGGER.trace("get called");
+		
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object != null && object instanceof String) {
+			LOGGER.trace("redirect to routing page as token is present");
+			return "redirect:/vehicle-routing";
+		}
+		
 		return "register";
 	}
 
@@ -54,6 +66,14 @@ public class RegistrationController {
 				lastName,
 				email);
 		ModelAndView modelAndView = new ModelAndView();
+		
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object != null && object instanceof String) {
+			LOGGER.trace("redirect to routing page as token is present");
+			modelAndView.setViewName("redirect:/vehicle-routing");
+			return modelAndView;
+		}
+		
 		boolean errorsPresent = false;
 		if (!StringUtils.hasText(firstName)) {
 			errorsPresent = true;

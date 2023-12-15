@@ -18,6 +18,7 @@ import edu.northeastern.csye6220.vehicleRoutePlanning.service.EmailService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.OtpService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.UserService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.util.EmailValidationUtil;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/login")
@@ -29,19 +30,31 @@ public class LoginController {
 	private final EmailService emailService;
 	private final OtpService otpService;
 	
+	private final HttpSession httpSession;
+	
 	@Autowired
 	public LoginController(
 			UserService userService, 
 			EmailService emailService,
-			OtpService otpService) {
+			OtpService otpService,
+			HttpSession httpSession) {
 		this.userService = userService;
 		this.emailService = emailService;
 		this.otpService = otpService;
+		
+		this.httpSession = httpSession;
 	}
 	
 	@GetMapping
 	public String get() {
 		LOGGER.trace("accessing get method");
+		
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object != null && object instanceof String) {
+			LOGGER.trace("redirect to routing page as token is present");
+			return "redirect:/vehicle-routing";
+		}
+		
 		return "login";
 	}
 	
@@ -49,6 +62,14 @@ public class LoginController {
 	public ModelAndView add(@RequestParam(name = Constants.FIELD_EMAIL) String email) {
 		LOGGER.trace("add login email: {}", email);
 		ModelAndView modelAndView = new ModelAndView();
+		
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object != null && object instanceof String) {
+			LOGGER.trace("redirect to routing page as token is present");
+			modelAndView.setViewName("redirect:/vehicle-routing");
+			return modelAndView;
+		}
+		
 		boolean errorsPresent = false;
 		
 		boolean emailValid = true;

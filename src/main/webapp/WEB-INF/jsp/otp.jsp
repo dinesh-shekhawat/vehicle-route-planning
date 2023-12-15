@@ -16,7 +16,7 @@
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-0">
         <div class="container">
-            <a href="index.html" class="navbar-brand">DriveSync</a>
+            <span class="navbar-brand">DriveSync</a>
         </div>
     </nav>
     
@@ -42,7 +42,7 @@
                             <form action="otp/add" method="POST">
                                 <div class="mb-3">
                                     <label for="first-name" class="form-label">Email</label>
-                                    <input type="text" class="form-control" name="email" id="first-name" value="${param.email}" readonly>                                                                        
+                                    <input type="text" class="form-control" name="email" id="first-name" value="${param.email}">                                                                        
                                     <span class="text-success">Enter OTP sent at your email ID</span>
                                 </div>
                                 
@@ -55,6 +55,10 @@
                                     <c:if test="${param.otpError != null}">                                        
                                         <span class="text-danger">Invalid OTP provided</span>
                                     </c:if>
+                                </div>
+
+                                <div class="mb-3 text-center">
+                                    <p>Did not get it yet? <a href="${pageContext.request.contextPath}/login">Retry Login</a></p>
                                 </div>
                                                                 
                                 <div class="d-grid col-12">

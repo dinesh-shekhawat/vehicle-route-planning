@@ -48,6 +48,13 @@ public class OtpController {
 	@GetMapping()
 	public String render() {
 		LOGGER.trace("render called");
+		
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object != null && object instanceof String) {
+			LOGGER.trace("redirect to routing page as token is present");
+			return "redirect:/vehicle-routing";
+		}
+		
 		return "otp";
 	}
 	
@@ -58,6 +65,14 @@ public class OtpController {
 		LOGGER.trace("check email: {}, otp: {}", email, otp);
 		
 		ModelAndView modelAndView = new ModelAndView();
+
+		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
+		if (object != null && object instanceof String) {
+			LOGGER.trace("redirect to routing page as token is present");
+			modelAndView.setViewName("redirect:/vehicle-routing");
+			return modelAndView;
+		}
+		
 		boolean errorsPresent = false;
 		if (!StringUtils.hasText(otp)) {
 			errorsPresent = true;
