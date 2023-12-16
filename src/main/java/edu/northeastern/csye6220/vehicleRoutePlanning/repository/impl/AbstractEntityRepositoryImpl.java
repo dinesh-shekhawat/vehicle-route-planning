@@ -160,7 +160,6 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 	    T t = null;
 
 	    try (Session session = sessionFactory.openSession()) {
-	        // Assuming you have a User property in your entity and it's named "user"
 	        String hql = "FROM " + clazz.getSimpleName() + " WHERE id = :id AND createdBy = :user AND deleted = false";
 	        
 	        Query<T> query = session.createQuery(hql, clazz);
