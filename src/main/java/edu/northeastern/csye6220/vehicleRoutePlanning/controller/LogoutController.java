@@ -15,8 +15,12 @@ import jakarta.servlet.http.HttpSession;
 public class LogoutController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogoutController.class);
 
-	@Autowired
 	private HttpSession httpSession;
+	
+	@Autowired
+	public LogoutController(HttpSession httpSession) {
+		this.httpSession = httpSession;
+	}
 	
 	@GetMapping
 	public String logout() {
