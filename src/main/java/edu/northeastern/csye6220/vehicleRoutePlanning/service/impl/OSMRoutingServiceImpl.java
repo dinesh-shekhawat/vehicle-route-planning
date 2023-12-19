@@ -53,10 +53,34 @@ public class OSMRoutingServiceImpl implements RoutingService {
 
 	@Override
 	public Route getRoute(List<LocationModel> locations) {
-		LOGGER.trace("forming routes for locations: {}", locations);
+		LOGGER.trace("forming routes for locations size: {}", locations.size());
 
 		Map<String, List<List<Double>>> requestPayload = new HashMap<>();
-		requestPayload.put("coordinates", getCoordinatesList(locations));
+		List<List<Double>> coordinatesList = getCoordinatesList(locations);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Traversing coordinatesList of size: {}", coordinatesList.size());
+			StringBuilder builder = new StringBuilder();
+			builder.append("[");
+
+			int lastIndex = coordinatesList.size() - 1;
+
+		    for (int i = 0; i < coordinatesList.size(); i++) {
+		    	List<Double> coordinates = coordinatesList.get(i);
+		    	builder.append("[");
+		    	builder.append(coordinates.get(0));
+		    	builder.append(",");
+		    	builder.append(coordinates.get(1));
+		    	builder.append("]");
+		    	
+		    	if (i < lastIndex) {
+		            builder.append(",");
+		        }
+		    }
+		    builder.append("]");
+		    LOGGER.trace(builder.toString());
+		}
+		
+		requestPayload.put("coordinates", coordinatesList);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

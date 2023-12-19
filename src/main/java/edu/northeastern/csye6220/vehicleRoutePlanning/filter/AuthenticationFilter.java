@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 import edu.northeastern.csye6220.vehicleRoutePlanning.UserContextHolder;
 import edu.northeastern.csye6220.vehicleRoutePlanning.constants.Constants;
 import edu.northeastern.csye6220.vehicleRoutePlanning.entities.UserAccess;
+import edu.northeastern.csye6220.vehicleRoutePlanning.properties.AuthProperties;
 import edu.northeastern.csye6220.vehicleRoutePlanning.properties.URLProperties;
+import edu.northeastern.csye6220.vehicleRoutePlanning.service.FileService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.JwtService;
 import edu.northeastern.csye6220.vehicleRoutePlanning.service.UserAccessService;
 import jakarta.servlet.Filter;
@@ -34,21 +36,28 @@ public class AuthenticationFilter implements Filter {
 	private static final String UNKNOWN = "unknown";
 
 	private final URLProperties urlProperties;
+	private final AuthProperties authProperties;
 	private final UserAccessService userAccessService;
 	private final JwtService jwtService;
+	private final FileService fileService;
 	private final HttpSession httpSession;
 	
 	@Autowired
 	public AuthenticationFilter(
 			URLProperties urlProperties, 
+			AuthProperties authProperties,
 			UserAccessService userAccessService,
 			JwtService jwtService,
+			FileService fileService,
 			HttpSession httpSession) {
 		this.urlProperties = urlProperties;
+		this.authProperties = authProperties;
 		this.userAccessService = userAccessService;
 		this.jwtService = jwtService;
+		this.fileService = fileService;
 		this.httpSession = httpSession;
 		LOGGER.info("urlProperties: {}", urlProperties);
+		LOGGER.info("authProperties: {}", authProperties);
 	}
 
 	@Override
@@ -72,9 +81,10 @@ public class AuthenticationFilter implements Filter {
 			if (nonProtectedUrl) {
 				filterChain.doFilter(servletRequest, servletResponse);
 			} else {
-				String userInfo = getUserInfo(httpRequest);
-				LOGGER.trace("userInfo: {}", userInfo);
 				
+				boolean bypassAuthetication = fileService.isAuthenticationByPassFilePresent();
+				LOGGER.debug("bypassAuthetication: {}", bypassAuthetication);
+				String userInfo = bypassAuthetication ? authProperties.getDefaultUserInfo() :  getUserInfo(httpRequest) ;
 				if (userInfo != null) {
 					UserContextHolder.set(userInfo);
 					filterChain.doFilter(servletRequest, servletResponse);
