@@ -148,7 +148,7 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		        		.addSizeDimension(WEIGHT_INDEX, 1)
 		        		.setPickupLocation(Location.newInstance(
 		        				shipmentSourceLocation.getLongitude(),
-		        				shipmentDestinationLocation.getLatitude()))
+		        				shipmentSourceLocation.getLatitude()))
 		        		.setDeliveryLocation(Location.newInstance(
 		        				shipmentDestinationLocation.getLongitude(),
 		        				shipmentDestinationLocation.getLatitude()))

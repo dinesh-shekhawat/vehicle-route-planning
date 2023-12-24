@@ -60,10 +60,15 @@ public class OSMRoutingServiceImpl implements RoutingService {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Traversing coordinatesList of size: {}", coordinatesList.size());
 			StringBuilder builder = new StringBuilder();
+			
+			builder.append(System.lineSeparator());
+			builder.append("JSON LIST");
 			builder.append("[");
 
 			int lastIndex = coordinatesList.size() - 1;
 
+            builder.append(System.lineSeparator());
+			
 		    for (int i = 0; i < coordinatesList.size(); i++) {
 		    	List<Double> coordinates = coordinatesList.get(i);
 		    	builder.append("[");
@@ -76,7 +81,26 @@ public class OSMRoutingServiceImpl implements RoutingService {
 		            builder.append(",");
 		        }
 		    }
+		    
 		    builder.append("]");
+		    LOGGER.trace(builder.toString());
+		    
+		    builder.setLength(0);
+		    builder.append("Plain LIST");
+			builder.append(System.lineSeparator());
+
+			lastIndex = coordinatesList.size() - 1;
+
+            builder.append(System.lineSeparator());
+			
+		    for (int i = 0; i < coordinatesList.size(); i++) {
+		    	List<Double> coordinates = coordinatesList.get(i);
+		    	builder.append(coordinates.get(0));
+		    	builder.append(",");
+		    	builder.append(coordinates.get(1));
+				builder.append(System.lineSeparator());
+		    }
+		    
 		    LOGGER.trace(builder.toString());
 		}
 		
@@ -121,7 +145,7 @@ public class OSMRoutingServiceImpl implements RoutingService {
 
 	private List<Point> decodePolyline(String encodedPolyline) {
 		LOGGER.trace("decode encodedPolyline: {}", encodedPolyline);
-
+		
 		List<LatLng> decodedLatLngs = PolylineEncoding.decode(encodedPolyline);
 
 		List<Point> points = decodedLatLngs.stream().map(latLng -> new Point(latLng.lat, latLng.lng))
