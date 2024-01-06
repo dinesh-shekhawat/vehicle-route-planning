@@ -73,21 +73,34 @@ public class AuthenticationFilter implements Filter {
 		if (staticAssetUrl) {
 			filterChain.doFilter(servletRequest, servletResponse);
 		} else {
-			UserAccess access = createUserAccess(httpRequest);
-			userAccessService.add(access);
 			long startTime = System.currentTimeMillis();
 			
 			boolean nonProtectedUrl = isNonProtectedRoute(httpRequest);
 			if (nonProtectedUrl) {
 				filterChain.doFilter(servletRequest, servletResponse);
 			} else {
-				
 				boolean bypassAuthetication = fileService.isAuthenticationByPassFilePresent();
 				LOGGER.debug("bypassAuthetication: {}", bypassAuthetication);
 				String userInfo = bypassAuthetication ? authProperties.getDefaultUserInfo() :  getUserInfo(httpRequest) ;
+				LOGGER.info("userInfo: {}", userInfo);
 				if (userInfo != null) {
 					UserContextHolder.set(userInfo);
+					
+					UserAccess access = createUserAccess(httpRequest);
+					userAccessService.add(access);
+					
 					filterChain.doFilter(servletRequest, servletResponse);
+					
+					long endTime = System.currentTimeMillis();
+					long timeTaken = endTime - startTime;
+					
+					int responseCode = getResponseCode(httpResponse);
+					access.setResponseCode(responseCode);
+					access.setResponseTime(timeTaken);
+					LOGGER.info("millseconds taken to complete the request: {}", timeTaken);
+
+					userAccessService.update(access);
+					
 					UserContextHolder.clear();
 				} else {
 					LOGGER.error("token expected but not found");
@@ -95,17 +108,6 @@ public class AuthenticationFilter implements Filter {
 					return;
 				}
 			}
-			
-			long endTime = System.currentTimeMillis();
-			long timeTaken = endTime - startTime;
-			
-			int responseCode = getResponseCode(httpResponse);
-			access.setResponseCode(responseCode);
-			access.setResponseTime(timeTaken);
-			
-			userAccessService.update(access);
-			
-			LOGGER.info("millseconds taken to complete the request: {}", timeTaken);
 		}
 	}
 	
