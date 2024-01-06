@@ -14,4 +14,4 @@ echo "LOG_CONF_FILE: $LOG_CONF_FILE"
 echo "HIBERNATE_HBM2DDL_AUTO: $HIBERNATE_HBM2DDL_AUTO"
 echo "DEBUG_PORT: $DEBUG_PORT"
 
-mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=0.0.0.0:$DEBUG_PORT -Dlogging.config=$LOG_CONF_FILE -Dhibernate.hbm2ddlAuto=$HIBERNATE_HBM2DDL_AUTO"
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:$DEBUG_PORT -Dlogging.config=$LOG_CONF_FILE -Dhibernate.hbm2ddlAuto=$HIBERNATE_HBM2DDL_AUTO"
