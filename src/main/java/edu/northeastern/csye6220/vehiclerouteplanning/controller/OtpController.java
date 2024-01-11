@@ -33,6 +33,8 @@ public class OtpController {
 	
 	private final HttpSession httpSession;
 	
+	private static final String REDIRECT_VEHICLE_ROUTING = "redirect:/vehicle-routing";
+	
 	@Autowired
 	public OtpController(
 			OtpService otpService, 
@@ -50,9 +52,9 @@ public class OtpController {
 		LOGGER.trace("render called");
 		
 		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
-		if (object != null && object instanceof String) {
+		if (object instanceof String) {
 			LOGGER.trace("redirect to routing page as token is present");
-			return "redirect:/vehicle-routing";
+			return REDIRECT_VEHICLE_ROUTING;
 		}
 		
 		return "otp";
@@ -67,9 +69,9 @@ public class OtpController {
 		ModelAndView modelAndView = new ModelAndView();
 
 		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
-		if (object != null && object instanceof String) {
+		if (object instanceof String) {
 			LOGGER.trace("redirect to routing page as token is present");
-			modelAndView.setViewName("redirect:/vehicle-routing");
+			modelAndView.setViewName(REDIRECT_VEHICLE_ROUTING);
 			return modelAndView;
 		}
 		
@@ -125,7 +127,7 @@ public class OtpController {
 			LOGGER.trace("there are errors in the otp form");
 			modelAndView.setViewName("redirect:/otp");
 		} else {
-			modelAndView.setViewName("redirect:/vehicle-routing");
+			modelAndView.setViewName(REDIRECT_VEHICLE_ROUTING);
 		}
 		
 		return modelAndView;

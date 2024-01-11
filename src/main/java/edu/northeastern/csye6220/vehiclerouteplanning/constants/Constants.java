@@ -1,6 +1,11 @@
 package edu.northeastern.csye6220.vehiclerouteplanning.constants;
 
 public class Constants {
+	
+	private Constants() {
+		
+	}
+
 	public static final String FIELD_FIRST_NAME = "firstName";
 	public static final String FIELD_LAST_NAME = "lastName";
 	public static final String FIELD_EMAIL = "email";

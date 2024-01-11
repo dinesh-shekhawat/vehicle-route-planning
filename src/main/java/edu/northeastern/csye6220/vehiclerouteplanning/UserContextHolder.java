@@ -1,6 +1,11 @@
 package edu.northeastern.csye6220.vehiclerouteplanning;
 
 public class UserContextHolder {
+	
+	private UserContextHolder() {
+		
+	}
+	
 	private static final ThreadLocal<String> user = new ThreadLocal<>();
 
     public static void set(String userName) {

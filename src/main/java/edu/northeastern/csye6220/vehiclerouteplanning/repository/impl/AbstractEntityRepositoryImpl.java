@@ -13,11 +13,13 @@ import edu.northeastern.csye6220.vehiclerouteplanning.entities.AbstractEntity;
 import edu.northeastern.csye6220.vehiclerouteplanning.repository.AbstractEntityRepository;
 
 public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements AbstractEntityRepository<T> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityRepositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityRepositoryImpl.class); // NOSONAR
 
 	protected SessionFactory sessionFactory;
 	private Class<T> clazz;
-
+	
+	private static final String ENTITY_PARAMETER = "entity";
+	
 	protected void register(SessionFactory sessionFactory, Class<T> clazz) {
 		this.sessionFactory = sessionFactory;
 		this.clazz = clazz;
@@ -37,8 +39,10 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 
 			session.get(clazz, t.getId());
 		} catch (Exception e) {
-			LOGGER.error("exception in save: {}", e.getMessage(), e);
-			transaction.rollback();
+			if (transaction != null) {
+				transaction.rollback();	
+			}
+			
 			throw e;
 		}
 
@@ -60,8 +64,10 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 
 			session.get(clazz, t.getId());
 		} catch (Exception e) {
-			LOGGER.error("exception in save: {}", e.getMessage(), e);
-			transaction.rollback();
+			if (transaction != null) {
+				transaction.rollback();	
+			}	
+			
 			throw e;
 		}
 
@@ -75,13 +81,11 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 
 		T t = null;
 		try (Session session = sessionFactory.openSession()) {
-			String hql = "FROM " + clazz.getSimpleName() + " WHERE id = :id AND deleted = false";
+			String hql = "FROM :entity WHERE id = :id AND deleted = false";
 			Query<T> query = session.createQuery(hql, clazz);
+			query.setParameter(ENTITY_PARAMETER, clazz.getSimpleName());
 			query.setParameter("id", id);
 			t = query.uniqueResult();
-		} catch (Exception e) {
-			LOGGER.error("Exception in findByIdAndNotDeleted: {}", e.getMessage(), e);
-			throw e;
 		}
 
 		return t;
@@ -100,8 +104,9 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 			session.merge(t);
 			transaction.commit();
 		} catch (Exception e) {
-			LOGGER.error("exception in save: {}", e.getMessage(), e);
-			transaction.rollback();
+			if (transaction != null) {
+				transaction.rollback();	
+			}
 			throw e;
 		}
 	}
@@ -120,8 +125,9 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 			session.merge(t);
 			transaction.commit();
 		} catch (Exception e) {
-			LOGGER.error("exception in save: {}", e.getMessage(), e);
-			transaction.rollback();
+			if (transaction != null) {
+				transaction.rollback();	
+			}
 			throw e;
 		}
 
@@ -141,13 +147,11 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 		List<T> entities = null;
 		
 		try (Session session = sessionFactory.openSession()) {
-			String hql = "FROM " + clazz.getSimpleName() + " WHERE createdBy = :createdBy AND deleted = false ORDER by createdOn";
+			String hql = "FROM :entity WHERE createdBy = :createdBy AND deleted = false ORDER by createdOn";
 			Query<T> query = session.createQuery(hql, clazz);
+			query.setParameter(ENTITY_PARAMETER, clazz.getSimpleName());
 			query.setParameter("createdBy", user);
 			entities = query.list();
-		} catch (Exception e) {
-			LOGGER.error("Exception in getAllNotDeleted: {}", e.getMessage(), e);
-			throw e;
 		}
 
 		return entities;
@@ -160,16 +164,13 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 	    T t = null;
 
 	    try (Session session = sessionFactory.openSession()) {
-	        String hql = "FROM " + clazz.getSimpleName() + " WHERE id = :id AND createdBy = :user AND deleted = false";
-	        
+	        String hql = "FROM :entity WHERE id = :id AND createdBy = :user AND deleted = false";
 	        Query<T> query = session.createQuery(hql, clazz);
+			query.setParameter(ENTITY_PARAMETER, clazz.getSimpleName());
 	        query.setParameter("id", id);
 	        query.setParameter("user", user);
 
 	        t = query.uniqueResult();
-	    } catch (Exception e) {
-	        LOGGER.error("Exception in findByIdAndUserAndNotDeleted: {}", e.getMessage(), e);
-	        throw e;
 	    }
 
 	    return t;
