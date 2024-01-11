@@ -1,5 +1,6 @@
 package edu.northeastern.csye6220.vehiclerouteplanning.util;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import edu.northeastern.csye6220.vehiclerouteplanning.constants.Constants;
@@ -9,7 +10,7 @@ public class OtpGenerator {
 	private static final Random random;
 	
 	static {
-		random = new Random();
+		random = new SecureRandom();
 	}
 	
 	private OtpGenerator() {

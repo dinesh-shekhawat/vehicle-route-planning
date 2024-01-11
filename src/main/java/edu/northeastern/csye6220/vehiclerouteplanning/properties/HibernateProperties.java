@@ -11,8 +11,8 @@ public class HibernateProperties {
     private String host = "localhost";
     private String port = "3306";
     private String database = "test";
-    private String user = "root";
-    private String password = "root";
+    private String user;
+    private String password;
 
     private String hbm2ddlAuto = "validate";
     private String dialect = "org.hibernate.dialect.MySQLDialect";
