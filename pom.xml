@@ -17,6 +17,7 @@
 		<java.version>17</java.version>
 		 <sonar.host.url>http://localhost:9010</sonar.host.url>
 		 <sonar.scm.disabled>true</sonar.scm.disabled>
+		 <sonar.coverage.exclusions>**/*</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
