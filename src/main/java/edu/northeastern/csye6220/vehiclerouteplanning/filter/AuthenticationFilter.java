@@ -63,9 +63,6 @@ public class AuthenticationFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
 			throws IOException, ServletException {
-		// Too verbose to print for static assets being accessed
-//		LOGGER.trace("performing filter");
-		
 		HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 		HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
@@ -81,7 +78,7 @@ public class AuthenticationFilter implements Filter {
 			} else {
 				boolean bypassAuthetication = fileService.isAuthenticationByPassFilePresent();
 				LOGGER.debug("bypassAuthetication: {}", bypassAuthetication);
-				String userInfo = bypassAuthetication ? authProperties.getDefaultUserInfo() :  getUserInfo(httpRequest) ;
+				String userInfo = bypassAuthetication ? authProperties.getDefaultUserInfo() :  getUserInfo() ;
 				LOGGER.info("userInfo: {}", userInfo);
 				if (userInfo != null) {
 					UserContextHolder.set(userInfo);
@@ -105,16 +102,15 @@ public class AuthenticationFilter implements Filter {
 				} else {
 					LOGGER.error("token expected but not found");
 					httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
-					return;
 				}
 			}
 		}
 	}
 	
-	private String getUserInfo(HttpServletRequest httpRequest) {
+	private String getUserInfo() {
 		String result = null;
 		try {
-			String token = extractTokenFromRequest(httpRequest);
+			String token = extractToken();
 			if (token == null) {
 				LOGGER.trace("token not found in request");
 				return null;
@@ -128,14 +124,9 @@ public class AuthenticationFilter implements Filter {
 		return result;
 	}
 
-	private String extractTokenFromRequest(HttpServletRequest httpRequest) {
+	private String extractToken() {
 		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
-		if (object instanceof String) {
-			String token = (String) object;
-			return token;	
-		} else {
-			return null;
-		}
+		return (String) object;
 	}
 
 	private boolean isStaticAssetUrl(HttpServletRequest httpRequest) {
@@ -171,7 +162,6 @@ public class AuthenticationFilter implements Filter {
 		userAccess.setUrl(url);
 		userAccess.setClientIpAddress(clientIpAddress);
 		userAccess.setMethodType(method);
-//		LOGGER.debug("created user userAccess: {}", userAccess);
 		return userAccess;
 	}
 
