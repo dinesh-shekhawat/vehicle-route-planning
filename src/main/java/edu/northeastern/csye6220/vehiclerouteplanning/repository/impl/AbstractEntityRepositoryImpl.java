@@ -18,11 +18,19 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 	protected SessionFactory sessionFactory;
 	private Class<T> clazz;
 	
-	private static final String ENTITY_PARAMETER = "entity";
+	// Pre-constructed HQL queries
+    private String findByIdAndNotDeletedQuery;
+    private String getAllNotDeletedQuery;
+    private String findByIdAndUserAndNotDeletedQuery;
 	
 	protected void register(SessionFactory sessionFactory, Class<T> clazz) {
 		this.sessionFactory = sessionFactory;
 		this.clazz = clazz;
+		
+		final String commonHqlPrefix = "FROM " + clazz.getSimpleName();
+        this.findByIdAndNotDeletedQuery = commonHqlPrefix + " WHERE id = :id AND deleted = false";
+        this.getAllNotDeletedQuery = commonHqlPrefix + " WHERE createdBy = :createdBy AND deleted = false ORDER by createdOn";
+        this.findByIdAndUserAndNotDeletedQuery = commonHqlPrefix + " WHERE id = :id AND createdBy = :user AND deleted = false";
 	}
 
 	@Override
@@ -81,9 +89,7 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 
 		T t = null;
 		try (Session session = sessionFactory.openSession()) {
-			String hql = "FROM :entity WHERE id = :id AND deleted = false";
-			Query<T> query = session.createQuery(hql, clazz);
-			query.setParameter(ENTITY_PARAMETER, clazz.getSimpleName());
+			Query<T> query = session.createQuery(findByIdAndNotDeletedQuery, clazz);
 			query.setParameter("id", id);
 			t = query.uniqueResult();
 		}
@@ -147,9 +153,7 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 		List<T> entities = null;
 		
 		try (Session session = sessionFactory.openSession()) {
-			String hql = "FROM :entity WHERE createdBy = :createdBy AND deleted = false ORDER by createdOn";
-			Query<T> query = session.createQuery(hql, clazz);
-			query.setParameter(ENTITY_PARAMETER, clazz.getSimpleName());
+			Query<T> query = session.createQuery(getAllNotDeletedQuery, clazz);
 			query.setParameter("createdBy", user);
 			entities = query.list();
 		}
@@ -164,9 +168,7 @@ public class AbstractEntityRepositoryImpl<T extends AbstractEntity> implements A
 	    T t = null;
 
 	    try (Session session = sessionFactory.openSession()) {
-	        String hql = "FROM :entity WHERE id = :id AND createdBy = :user AND deleted = false";
-	        Query<T> query = session.createQuery(hql, clazz);
-			query.setParameter(ENTITY_PARAMETER, clazz.getSimpleName());
+	        Query<T> query = session.createQuery(findByIdAndUserAndNotDeletedQuery, clazz);
 	        query.setParameter("id", id);
 	        query.setParameter("user", user);
 
