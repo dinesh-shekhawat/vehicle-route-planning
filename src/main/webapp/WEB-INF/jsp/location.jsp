@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -66,6 +68,7 @@
                 <!-- Location List Table -->
                 <h2>Location List</h2>
                 <table class="table">
+                	<caption>Location List Table</caption>
                     <thead>
                         <tr>
                             <th>Name</th>

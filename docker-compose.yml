@@ -1,0 +1,44 @@
+version: '3'
+services:
+  psql-free:
+    image: postgres:12
+    container_name: "sonar-psql-free"
+    restart: always
+    networks:
+      - sonarnet-free
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=Neverdown001
+    volumes:
+      - sonarqube-postgresql-free:/var/lib/postgresql
+      - sonarqube-postgresql_data-free:/var/lib/postgresql/data
+    ports:
+      - "3310:3306"    
+  sonarqube-free:
+    image: sonarqube:community
+    #privileged: true
+    container_name: "sonar-web-free"
+    restart: always
+    networks:
+      - sonarnet-free
+    environment:
+      - TZ=Asia/Shanghai
+      - ES_JAVA_HOME=/opt/java/openjdk
+      - SONARQUBE_JDBC_USERNAME=sonar
+      - SONARQUBE_JDBC_PASSWORD=Neverdown001  
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://psql-free:5432/sonar  
+    ports:
+      - "9010:9000"
+    volumes:
+      - sonarqube-conf-free:/opt/sonarqube/conf
+      - sonarqube-data-free:/opt/sonarqube/data
+      - sonarqube-extensions-free:/opt/sonarqube/extensions   
+networks:
+  sonarnet-free:
+    driver: bridge
+volumes:
+   sonarqube-conf-free:
+   sonarqube-data-free:
+   sonarqube-extensions-free:                          
+   sonarqube-postgresql-free:
+   sonarqube-postgresql_data-free:

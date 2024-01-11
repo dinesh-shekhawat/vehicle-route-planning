@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <html>
+    <!DOCTYPE html>
+	<html lang="en">
 
     <head>
         <meta charset="UTF-8">
@@ -78,7 +79,6 @@
                                 <div class="accordion-body">
                                     <div 
                                         class="btn btn-link" 
-                                        type="button"
                                         id="add-vehicle-button">
                                         Add Vehicle
                                     </div>
@@ -101,7 +101,7 @@
                             <div id="servicesAccordion" class="accordion-collapse collapse" aria-labelledby="servicesAccordion"
                                 data-bs-parent="#services-accordion-panel">
                                 <div class="accordion-body">
-                                    <div class="btn btn-link" type="button" id="add-service-button">
+                                    <div class="btn btn-link" id="add-service-button">
                                         Add Service
                                     </div>
 
@@ -123,7 +123,7 @@
                             <div id="deliveriesAccordion" class="accordion-collapse collapse" aria-labelledby="deliveriesAccordion"
                                 data-bs-parent="#deliveries-accordion-panel">
                                 <div class="accordion-body">
-                                    <div class="btn btn-link" type="button" id="add-delivery-button">
+                                    <div class="btn btn-link" id="add-delivery-button">
                                         Add Delivery
                                     </div>
 
@@ -145,7 +145,7 @@
                             <div id="shipmentsAccordion" class="accordion-collapse collapse" aria-labelledby="shipmentsAccordion"
                                 data-bs-parent="#shipments-accordion-panel">
                                 <div class="accordion-body">
-                                    <div class="btn btn-link" type="button" id="add-shipment-button">
+                                    <div class="btn btn-link" id="add-shipment-button">
                                         Add Shipment
                                     </div>
 
