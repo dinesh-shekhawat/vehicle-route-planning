@@ -82,8 +82,7 @@ public class HibernateConnectionServiceImpl implements HibernateConnectionServic
         );
 
         Metadata metadata = metadataSources.buildMetadata();
-        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
-        this.sessionFactory = sessionFactory;
+        this.sessionFactory = metadata.getSessionFactoryBuilder().build();
 	}
 
 	@Override

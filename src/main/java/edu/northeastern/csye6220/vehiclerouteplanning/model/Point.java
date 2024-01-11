@@ -1,5 +1,7 @@
 package edu.northeastern.csye6220.vehiclerouteplanning.model;
 
+import java.util.Objects;
+
 public class Point {
 	private double latitude;
     private double longitude;
@@ -27,6 +29,11 @@ public class Point {
 	}
 	
 	@Override
+	public int hashCode() {
+		return Objects.hash(latitude, longitude);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -38,7 +45,7 @@ public class Point {
 		return Double.doubleToLongBits(latitude) == Double.doubleToLongBits(other.latitude)
 				&& Double.doubleToLongBits(longitude) == Double.doubleToLongBits(other.longitude);
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Point [latitude=" + latitude + ", longitude=" + longitude + "]";

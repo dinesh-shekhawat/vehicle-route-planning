@@ -35,7 +35,7 @@ public class RouteRestController {
 	}
 	
 	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, ?> getType() {
+	public Map<String, Object> getType() {
 		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		return routingService.getInformation();
 	}
@@ -59,12 +59,11 @@ public class RouteRestController {
 				destinationLongitude);
 		
 		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
-		ETA eta = routingService.getDistance(
+		return routingService.getDistance(
 				sourceLatitude, 
 				sourceLongitude, 
 				destinationLatitude, 
 				destinationLongitude);
-		return eta;
 	}
 
 }

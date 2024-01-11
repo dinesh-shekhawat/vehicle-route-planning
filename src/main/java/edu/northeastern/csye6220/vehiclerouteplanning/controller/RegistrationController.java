@@ -48,7 +48,7 @@ public class RegistrationController {
 		LOGGER.trace("get called");
 		
 		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
-		if (object != null && object instanceof String) {
+		if (object instanceof String) {
 			LOGGER.trace("redirect to routing page as token is present");
 			return "redirect:/vehicle-routing";
 		}
@@ -70,7 +70,7 @@ public class RegistrationController {
 		ModelAndView modelAndView = new ModelAndView();
 		
 		Object object = httpSession.getAttribute(Constants.JWT_TOKEN);
-		if (object != null && object instanceof String) {
+		if (object instanceof String) {
 			LOGGER.trace("redirect to routing page as token is present");
 			modelAndView.setViewName("redirect:/vehicle-routing");
 			return modelAndView;

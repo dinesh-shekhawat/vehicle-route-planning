@@ -11,7 +11,7 @@ public interface RoutingService {
 
 	String getType();
 	
-	Map<String, ?> getInformation();
+	Map<String, Object> getInformation();
 	
 	Route getRoute(List<LocationModel> locations);
 	

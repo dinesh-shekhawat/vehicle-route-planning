@@ -16,7 +16,6 @@ import edu.northeastern.csye6220.vehiclerouteplanning.service.VehicleRoutingProb
 @RestController
 @RequestMapping("/vehicle-routing-problem-solver")
 public class VehicleRoutingProblemSolverController {
-	
 	private static final Logger LOGGER = LoggerFactory.getLogger(VehicleRoutingProblemSolverController.class);
 	
 	private final VehicleRoutingProblemSolverService problemSolverService;
@@ -29,8 +28,7 @@ public class VehicleRoutingProblemSolverController {
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public VehicleRoutingSolutionModel solve(@RequestBody(required = false) VehicleRoutingProblemModel model) {
-		VehicleRoutingSolutionModel solution = problemSolverService.solve(model);
-		return solution;
+		return problemSolverService.solve(model);
 	}
 	
 }

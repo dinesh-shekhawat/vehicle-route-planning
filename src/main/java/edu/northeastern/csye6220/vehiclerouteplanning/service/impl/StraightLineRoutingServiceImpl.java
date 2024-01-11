@@ -83,7 +83,7 @@ public class StraightLineRoutingServiceImpl implements RoutingService {
 	}
 
 	@Override
-	public Map<String, ?> getInformation() {
+	public Map<String, Object> getInformation() {
 		Map<String, Object> information = new HashMap<>();
 		information.put("type", getType());
 		information.put("routingProperties", routingProperties);

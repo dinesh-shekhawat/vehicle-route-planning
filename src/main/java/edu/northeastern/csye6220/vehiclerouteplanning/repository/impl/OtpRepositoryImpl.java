@@ -34,9 +34,6 @@ public class OtpRepositoryImpl extends AbstractEntityRepositoryImpl<Otp> impleme
 			query.setParameter("deleted", false);
 
 			otp = query.uniqueResult();
-		} catch (Exception e) {
-			LOGGER.error("Exception in findByEmailIdAndNotDeleted: {}", e.getMessage(), e);
-			throw e;
 		}
 		
 		LOGGER.trace("found the otp: {}", otp);

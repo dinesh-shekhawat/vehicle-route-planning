@@ -3,7 +3,6 @@ package edu.northeastern.csye6220.vehiclerouteplanning.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,8 +88,6 @@ public class OSMRoutingServiceImpl implements RoutingService {
 		    builder.append("Plain LIST");
 			builder.append(System.lineSeparator());
 
-			lastIndex = coordinatesList.size() - 1;
-
             builder.append(System.lineSeparator());
 			
 		    for (int i = 0; i < coordinatesList.size(); i++) {
@@ -119,8 +116,7 @@ public class OSMRoutingServiceImpl implements RoutingService {
 
 		ResponseEntity<String> responseBody = restTemplate.postForEntity(osmURL, requestEntity, String.class);
 
-		Route route = parseResponse(responseBody.getBody());
-		return route;
+		return parseResponse(responseBody.getBody());
 	}
 
 	private Route parseResponse(String responseBody) {
@@ -148,19 +144,23 @@ public class OSMRoutingServiceImpl implements RoutingService {
 		
 		List<LatLng> decodedLatLngs = PolylineEncoding.decode(encodedPolyline);
 
-		List<Point> points = decodedLatLngs.stream().map(latLng -> new Point(latLng.lat, latLng.lng))
-				.collect(Collectors.toList());
+		List<Point> points = decodedLatLngs
+				.stream()
+				.map(latLng -> new Point(latLng.lat, latLng.lng))
+				.toList();
 		LOGGER.trace("points size: {}", points.size());
 		return points;
 	}
 
 	private List<List<Double>> getCoordinatesList(List<LocationModel> locations) {
-		return locations.stream().map(location -> List.of(location.getLongitude(), location.getLatitude()))
-				.collect(Collectors.toList());
+		return locations
+				.stream()
+				.map(location -> List.of(location.getLongitude(), location.getLatitude()))
+				.toList();
 	}
 
 	@Override
-	public Map<String, ?> getInformation() {
+	public Map<String, Object> getInformation() {
 		Map<String, Object> information = new HashMap<>();
 		information.put("type", getType());
 		information.put("routingProperties", routingProperties);
@@ -194,8 +194,7 @@ public class OSMRoutingServiceImpl implements RoutingService {
 
         String jsonResponse = restTemplate.getForObject(osmURL, String.class);
 
-        ETA eta = extractETAFromJson(jsonResponse);
-        return eta;
+        return extractETAFromJson(jsonResponse);
 	}
 
 	private ETA extractETAFromJson(String jsonResponse) {

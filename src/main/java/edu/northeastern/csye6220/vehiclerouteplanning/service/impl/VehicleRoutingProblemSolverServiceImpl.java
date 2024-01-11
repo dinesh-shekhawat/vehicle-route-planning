@@ -2,6 +2,7 @@ package edu.northeastern.csye6220.vehiclerouteplanning.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,13 @@ import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
 import com.graphhopper.jsprit.core.problem.cost.VehicleRoutingTransportCosts;
 import com.graphhopper.jsprit.core.problem.job.Delivery;
+import com.graphhopper.jsprit.core.problem.job.Job;
 import com.graphhopper.jsprit.core.problem.job.Service;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 import com.graphhopper.jsprit.core.problem.solution.VehicleRoutingProblemSolution;
 import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
 import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
+import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity.JobActivity;
 import com.graphhopper.jsprit.core.problem.vehicle.Vehicle;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
@@ -47,10 +50,9 @@ import edu.northeastern.csye6220.vehiclerouteplanning.service.VehicleRoutingProb
 
 @org.springframework.stereotype.Service
 public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingProblemSolverService {
+	private static final Logger LOGGER = LoggerFactory.getLogger(VehicleRoutingProblemSolverServiceImpl.class);
 
-	private static final String DASH = "-";
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(LocationServiceImpl.class);
+	private static final int WEIGHT_INDEX = 0;
 	
 	private final RoutingFactoryService routingFactoryService;
 	
@@ -63,101 +65,14 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 	public VehicleRoutingSolutionModel solve(VehicleRoutingProblemModel problemModel) {
 		RoutingService routingService = routingFactoryService.getDefaultRoutingService();
 		
+		List<VehicleImpl> vehicles = constructVehicles(problemModel);
+		List<Job> jobs = constructJobs(problemModel);
+		
         VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
 		vrpBuilder.setFleetSize(VehicleRoutingProblem.FleetSize.FINITE);
-
-        final int WEIGHT_INDEX = 0;
-
-		LOGGER.info("Solving the vehicle routing problem for the following constraints");
+		vrpBuilder.addAllVehicles(vehicles);
+		vrpBuilder.addAllJobs(jobs);
 		
-		List<VehicleModel> vehicles = problemModel.getVehicles();
-		if (vehicles != null) {
-		    for (VehicleModel vehicle : vehicles) {
-		        LOGGER.info("vehicle: {}", vehicle);
-		        
-		        Point vehicleLocation = vehicle.getLocation();
-		        
-		        VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder
-		        		.newInstance(vehicle.getRegistrationNumber())
-		        		.addCapacityDimension(WEIGHT_INDEX, vehicle.getCapacity());
-		        VehicleType vehicleType = vehicleTypeBuilder.build();
-		        
-		        Location location = Location.newInstance(
-                		vehicleLocation.getLongitude(),
-                		vehicleLocation.getLatitude());
-		        
-		        VehicleImpl vehicleImpl = VehicleImpl.Builder
-		        		.newInstance(vehicle.getRegistrationNumber())
-	                    .setStartLocation(location)
-//	                    .setEndLocation(location)
-	                    .setType(vehicleType)
-	                    .setReturnToDepot(true)
-	                    .build();
-		        
-	            vrpBuilder.addVehicle(vehicleImpl);
-		    }
-		}
-
-		List<ServiceModel> services = problemModel.getServices();
-		if (services != null) {
-		    for (ServiceModel service : services) {
-		        LOGGER.info("service: {}", service);
-		        
-		        Point serviceLocation = service.getLocation();
-		        
-		        Service serviceJob = Service.Builder
-		        		.newInstance(service.getName())
-		        		.setLocation(Location.newInstance(
-		        				serviceLocation.getLongitude(), 
-		        				serviceLocation.getLatitude()))
-		        		.build();
-		        
-		        vrpBuilder.addJob(serviceJob);
-		    }
-		}
-		
-		List<DeliveryModel> deliveryModels = problemModel.getDeliveries();
-		if (deliveryModels != null) {
-			for (DeliveryModel deliveryModel : deliveryModels) {
-				LOGGER.info("delivery: {}", deliveryModel);
-				
-				Point deliveryLocation = deliveryModel.getLocation();
-				
-				Delivery deliveryJob = Delivery.Builder
-						.newInstance(deliveryModel.getName())
-						.addSizeDimension(WEIGHT_INDEX, 1)
-						.setLocation(Location.newInstance(
-								deliveryLocation.getLongitude(),
-								deliveryLocation.getLatitude()))
-						.build();
-				
-				vrpBuilder.addJob(deliveryJob);
-			}
-		}
-
-		List<ShipmentModel> shipments = problemModel.getShipments();
-		if (shipments != null) {
-		    for (ShipmentModel shipment : shipments) {
-		        LOGGER.info("shipment: {}", shipment);
-		        
-		        Point shipmentSourceLocation = shipment.getSourceLocation();
-		        Point shipmentDestinationLocation = shipment.getDestinationLocation();
-		        
-		        Shipment shipmentJob = Shipment.Builder
-		        		.newInstance(shipment.getName())
-		        		.addSizeDimension(WEIGHT_INDEX, 1)
-		        		.setPickupLocation(Location.newInstance(
-		        				shipmentSourceLocation.getLongitude(),
-		        				shipmentSourceLocation.getLatitude()))
-		        		.setDeliveryLocation(Location.newInstance(
-		        				shipmentDestinationLocation.getLongitude(),
-		        				shipmentDestinationLocation.getLatitude()))
-		        		.build();
-		        
-		        vrpBuilder.addJob(shipmentJob);
-		    }
-		}
-	
         VehicleRoutingTransportCostsMatrix.Builder matrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(false);        
         LOGGER.trace("location map size: {}", vrpBuilder.getLocationMap().size());
         
@@ -216,13 +131,7 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
             
             List<TourActivity> tourActivities = route.getActivities();
         	for (TourActivity activity : tourActivities) {
-        		String jobId;
-                if (activity instanceof TourActivity.JobActivity) {
-                    jobId = ((TourActivity.JobActivity) activity).getJob().getId();
-                } else {
-                    jobId = DASH;
-                }
-                
+        		String jobId = ((JobActivity) activity).getJob().getId();
                 Location location = activity.getLocation();
                 LOGGER.trace("jobId: {}, location: {}", jobId, location);
                 
@@ -262,6 +171,109 @@ public class VehicleRoutingProblemSolverServiceImpl implements VehicleRoutingPro
 		VehicleRoutingSolutionModel solutionModel = new VehicleRoutingSolutionModel();
 		solutionModel.setSolution(solution);
 		return solutionModel;
+	}
+	
+	private List<VehicleImpl> constructVehicles(VehicleRoutingProblemModel problemModel) {
+		List<VehicleModel> vehicles = problemModel.getVehicles();
+		
+		if (vehicles == null) {
+			return Collections.emptyList();
+		}
+		
+		List<VehicleImpl> result = new ArrayList<>(vehicles.size());
+		
+        for (VehicleModel vehicle : vehicles) {
+	        LOGGER.info("vehicle: {}", vehicle);
+	        
+	        Point vehicleLocation = vehicle.getLocation();
+	        
+	        VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder
+	        		.newInstance(vehicle.getRegistrationNumber())
+	        		.addCapacityDimension(WEIGHT_INDEX, vehicle.getCapacity());
+	        VehicleType vehicleType = vehicleTypeBuilder.build();
+	        
+	        Location location = Location.newInstance(
+            		vehicleLocation.getLongitude(),
+            		vehicleLocation.getLatitude());
+	        
+	        VehicleImpl vehicleImpl = VehicleImpl.Builder
+	        		.newInstance(vehicle.getRegistrationNumber())
+                    .setStartLocation(location)
+//                    .setEndLocation(location)
+                    .setType(vehicleType)
+                    .setReturnToDepot(true)
+                    .build();
+	        
+	        result.add(vehicleImpl);
+	    }
+        
+        return result;
+	}
+	
+	private List<Job> constructJobs(VehicleRoutingProblemModel problemModel) {
+		List<Job> jobs = new ArrayList<>();
+		
+		List<ServiceModel> services = problemModel.getServices();
+		if (services != null) {
+		    for (ServiceModel service : services) {
+		        LOGGER.info("service: {}", service);
+		        
+		        Point serviceLocation = service.getLocation();
+		        
+		        Service serviceJob = Service.Builder
+		        		.newInstance(service.getName())
+		        		.setLocation(Location.newInstance(
+		        				serviceLocation.getLongitude(), 
+		        				serviceLocation.getLatitude()))
+		        		.build();
+		        
+		        jobs.add(serviceJob);
+		    }
+		}
+		
+		List<DeliveryModel> deliveryModels = problemModel.getDeliveries();
+		if (deliveryModels != null) {
+			for (DeliveryModel deliveryModel : deliveryModels) {
+				LOGGER.info("delivery: {}", deliveryModel);
+				
+				Point deliveryLocation = deliveryModel.getLocation();
+				
+				Delivery deliveryJob = Delivery.Builder
+						.newInstance(deliveryModel.getName())
+						.addSizeDimension(WEIGHT_INDEX, 1)
+						.setLocation(Location.newInstance(
+								deliveryLocation.getLongitude(),
+								deliveryLocation.getLatitude()))
+						.build();
+				
+				jobs.add(deliveryJob);
+			}
+		}
+
+		List<ShipmentModel> shipments = problemModel.getShipments();
+		if (shipments != null) {
+		    for (ShipmentModel shipment : shipments) {
+		        LOGGER.info("shipment: {}", shipment);
+		        
+		        Point shipmentSourceLocation = shipment.getSourceLocation();
+		        Point shipmentDestinationLocation = shipment.getDestinationLocation();
+		        
+		        Shipment shipmentJob = Shipment.Builder
+		        		.newInstance(shipment.getName())
+		        		.addSizeDimension(WEIGHT_INDEX, 1)
+		        		.setPickupLocation(Location.newInstance(
+		        				shipmentSourceLocation.getLongitude(),
+		        				shipmentSourceLocation.getLatitude()))
+		        		.setDeliveryLocation(Location.newInstance(
+		        				shipmentDestinationLocation.getLongitude(),
+		        				shipmentDestinationLocation.getLatitude()))
+		        		.build();
+		        
+		        jobs.add(shipmentJob);
+		    }
+		}
+		
+		return jobs;
 	}
 
 }

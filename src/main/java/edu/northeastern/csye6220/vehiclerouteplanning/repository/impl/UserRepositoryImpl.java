@@ -13,7 +13,7 @@ import edu.northeastern.csye6220.vehiclerouteplanning.repository.UserRepository;
 
 @Service
 public class UserRepositoryImpl extends AbstractEntityRepositoryImpl<User> implements UserRepository {
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserAccessRepositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryImpl.class);
 
 	@Autowired
 	public UserRepositoryImpl(HibernateConnectionService hibernateConnectionService) {
@@ -33,9 +33,6 @@ public class UserRepositoryImpl extends AbstractEntityRepositoryImpl<User> imple
 			query.setParameter("deleted", false);
 
 			user = query.uniqueResult();
-		} catch (Exception e) {
-			LOGGER.error("Exception in findByEmailIdAndNotDeleted: {}", e.getMessage(), e);
-			throw e;
 		}
 		
 		LOGGER.trace("found the user: {}", user);

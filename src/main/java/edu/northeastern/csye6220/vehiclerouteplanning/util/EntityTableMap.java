@@ -9,18 +9,23 @@ import edu.northeastern.csye6220.vehiclerouteplanning.entities.User;
 import edu.northeastern.csye6220.vehiclerouteplanning.entities.UserAccess;
 
 public class EntityTableMap {
+	
+	private EntityTableMap() {
+		
+	}
+	
 	// Might need in case of native SQL queries
-    private static Map<Class<? extends AbstractEntity>, String> entityTableMap = new HashMap<>();
+    private static Map<Class<? extends AbstractEntity>, String> map = new HashMap<>();
 	    
 	static {
 		// Add mappings between entity classes and table names
-		entityTableMap.put(UserAccess.class, "user_access");
-		entityTableMap.put(User.class, "user");
-		entityTableMap.put(Otp.class, "otp");
+		map.put(UserAccess.class, "user_access");
+		map.put(User.class, "user");
+		map.put(Otp.class, "otp");
 	}
 
 	public static String getTableName(Class<? extends AbstractEntity> entityClass) {
-		return entityTableMap.get(entityClass);
+		return map.get(entityClass);
 	}
 
 }
