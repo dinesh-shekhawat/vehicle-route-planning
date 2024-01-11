@@ -8,6 +8,10 @@ import edu.northeastern.csye6220.vehiclerouteplanning.model.LocationModel;
 
 public class LocationAdapter {
 
+	private LocationAdapter() {
+		
+	}
+	
     public static Location createRequest(LocationModel locationModel) {
         Location location = new Location();
         location.setName(locationModel.getName());

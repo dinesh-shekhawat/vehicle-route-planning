@@ -8,6 +8,10 @@ import edu.northeastern.csye6220.vehiclerouteplanning.model.VehicleModel;
 
 public class VehicleAdapter {
 
+	private VehicleAdapter() {
+		
+	}
+	
 	public static Vehicle createRequest(VehicleModel vehicleModel) {
 		Vehicle vehicle = new Vehicle();
         vehicle.setName(vehicleModel.getName());
